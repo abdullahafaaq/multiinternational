@@ -6,10 +6,19 @@ import { Textarea } from '@/components/ui/textarea';
 import { useSite } from '@/contexts/SiteContext';
 import { toast } from 'sonner';
 import { useState, useEffect } from 'react';
+import { Lock, Eye, EyeOff } from 'lucide-react';
+import { getAdminPassword, setAdminPassword } from '@/lib/auth';
 
 export default function AdminSettings() {
   const { settings, updateSettings } = useSite();
   const [formData, setFormData] = useState(settings);
+  
+  // Password change state
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
 
   useEffect(() => {
     setFormData(settings);
@@ -19,6 +28,35 @@ export default function AdminSettings() {
     e.preventDefault();
     updateSettings(formData);
     toast.success('Settings saved successfully!');
+  };
+
+  const handlePasswordChange = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Validate current password
+    if (currentPassword !== getAdminPassword()) {
+      toast.error('Current password is incorrect.');
+      return;
+    }
+    
+    // Validate new password
+    if (newPassword.length < 6) {
+      toast.error('New password must be at least 6 characters.');
+      return;
+    }
+    
+    // Validate confirmation
+    if (newPassword !== confirmPassword) {
+      toast.error('New passwords do not match.');
+      return;
+    }
+    
+    // Update password
+    setAdminPassword(newPassword);
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+    toast.success('Password updated successfully!');
   };
 
   return (
@@ -139,6 +177,85 @@ export default function AdminSettings() {
         <Button type="submit" size="lg" className="w-full md:w-auto">
           Save Changes
         </Button>
+      </form>
+
+      {/* Password Change Section */}
+      <form onSubmit={handlePasswordChange} className="space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="font-serif flex items-center gap-2">
+              <Lock className="w-5 h-5" />
+              Change Admin Password
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="currentPassword">Current Password</Label>
+              <div className="relative">
+                <Input
+                  id="currentPassword"
+                  type={showCurrentPassword ? 'text' : 'password'}
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  placeholder="Enter current password"
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {showCurrentPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+            
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="newPassword">New Password</Label>
+                <div className="relative">
+                  <Input
+                    id="newPassword"
+                    type={showNewPassword ? 'text' : 'password'}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Enter new password"
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Confirm new password"
+                />
+              </div>
+            </div>
+            
+            <p className="text-sm text-muted-foreground">
+              Password must be at least 6 characters long.
+            </p>
+            
+            <Button 
+              type="submit" 
+              variant="secondary"
+              disabled={!currentPassword || !newPassword || !confirmPassword}
+            >
+              Update Password
+            </Button>
+          </CardContent>
+        </Card>
       </form>
     </div>
   );
