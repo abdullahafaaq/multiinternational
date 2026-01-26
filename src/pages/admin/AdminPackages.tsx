@@ -1,18 +1,19 @@
-import { useState } from 'react';
-import { Plus, Edit2, Trash2, Star } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { Plus, Edit2, Trash2, Star, Upload, Link, Image } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useSite } from '@/contexts/SiteContext';
 import { TravelPackage } from '@/lib/siteData';
 import { toast } from 'sonner';
 
-const imageOptions = [
+const presetImageOptions = [
   { value: 'maldives', label: 'Maldives' },
   { value: 'santorini', label: 'Santorini, Greece' },
   { value: 'swiss-alps', label: 'Swiss Alps' },
@@ -20,6 +21,8 @@ const imageOptions = [
   { value: 'dubai', label: 'Dubai' },
   { value: 'machu-picchu', label: 'Machu Picchu' },
 ];
+
+const isCustomUrl = (image: string) => image.startsWith('http') || image.startsWith('data:');
 
 export default function AdminPackages() {
   const { packages, addPackage, updatePackage, deletePackage } = useSite();
@@ -35,6 +38,9 @@ export default function AdminPackages() {
     image: 'maldives',
     featured: false
   });
+  const [imageMode, setImageMode] = useState<'preset' | 'url' | 'upload'>('preset');
+  const [customImageUrl, setCustomImageUrl] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const resetForm = () => {
     setFormData({
@@ -48,10 +54,13 @@ export default function AdminPackages() {
       featured: false
     });
     setEditingPackage(null);
+    setImageMode('preset');
+    setCustomImageUrl('');
   };
 
   const openEditDialog = (pkg: TravelPackage) => {
     setEditingPackage(pkg);
+    const isCustom = isCustomUrl(pkg.image);
     setFormData({
       name: pkg.name,
       destination: pkg.destination,
@@ -62,12 +71,48 @@ export default function AdminPackages() {
       image: pkg.image,
       featured: pkg.featured
     });
+    if (isCustom) {
+      setImageMode('url');
+      setCustomImageUrl(pkg.image);
+    } else {
+      setImageMode('preset');
+      setCustomImageUrl('');
+    }
     setIsDialogOpen(true);
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image must be less than 5MB');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const base64 = event.target?.result as string;
+      setFormData(prev => ({ ...prev, image: base64 }));
+      toast.success('Image uploaded successfully');
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Determine the final image value based on mode
+    let finalImage = formData.image;
+    if (imageMode === 'url' && customImageUrl) {
+      finalImage = customImageUrl;
+    }
+
     const packageData = {
       name: formData.name,
       destination: formData.destination,
@@ -75,7 +120,7 @@ export default function AdminPackages() {
       price: formData.price,
       description: formData.description,
       highlights: formData.highlights.split(',').map(h => h.trim()).filter(Boolean),
-      image: formData.image,
+      image: finalImage,
       featured: formData.featured
     };
 
@@ -187,36 +232,103 @@ export default function AdminPackages() {
                   placeholder="Overwater Villa, All-Inclusive Dining, Sunset Cruise"
                 />
               </div>
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Image</Label>
-                  <Select
-                    value={formData.image}
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, image: value }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {imageOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>Featured</Label>
-                  <div className="flex items-center gap-2 pt-2">
-                    <Switch
-                      checked={formData.featured}
-                      onCheckedChange={(checked) => setFormData(prev => ({ ...prev, featured: checked }))}
+              <div className="space-y-4">
+                <Label>Destination Image</Label>
+                <Tabs value={imageMode} onValueChange={(v) => setImageMode(v as 'preset' | 'url' | 'upload')}>
+                  <TabsList className="grid w-full grid-cols-3">
+                    <TabsTrigger value="preset" className="gap-2">
+                      <Image className="w-4 h-4" />
+                      Preset
+                    </TabsTrigger>
+                    <TabsTrigger value="url" className="gap-2">
+                      <Link className="w-4 h-4" />
+                      URL
+                    </TabsTrigger>
+                    <TabsTrigger value="upload" className="gap-2">
+                      <Upload className="w-4 h-4" />
+                      Upload
+                    </TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="preset" className="mt-4">
+                    <Select
+                      value={isCustomUrl(formData.image) ? 'maldives' : formData.image}
+                      onValueChange={(value) => setFormData(prev => ({ ...prev, image: value }))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {presetImageOptions.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </TabsContent>
+                  
+                  <TabsContent value="url" className="mt-4 space-y-3">
+                    <Input
+                      placeholder="https://example.com/image.jpg"
+                      value={customImageUrl}
+                      onChange={(e) => setCustomImageUrl(e.target.value)}
                     />
-                    <span className="text-sm text-muted-foreground">
-                      Show on homepage
-                    </span>
-                  </div>
+                    {customImageUrl && (
+                      <div className="rounded-lg overflow-hidden border border-border">
+                        <img 
+                          src={customImageUrl} 
+                          alt="Preview" 
+                          className="w-full h-32 object-cover"
+                          onError={(e) => (e.currentTarget.src = '/placeholder.svg')}
+                        />
+                      </div>
+                    )}
+                  </TabsContent>
+                  
+                  <TabsContent value="upload" className="mt-4 space-y-3">
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleFileUpload}
+                      accept="image/*"
+                      className="hidden"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full gap-2"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      <Upload className="w-4 h-4" />
+                      Choose Image File
+                    </Button>
+                    {formData.image.startsWith('data:') && (
+                      <div className="rounded-lg overflow-hidden border border-border">
+                        <img 
+                          src={formData.image} 
+                          alt="Uploaded preview" 
+                          className="w-full h-32 object-cover"
+                        />
+                      </div>
+                    )}
+                    <p className="text-xs text-muted-foreground">
+                      Max 5MB. Stored locally in browser.
+                    </p>
+                  </TabsContent>
+                </Tabs>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Featured</Label>
+                <div className="flex items-center gap-2">
+                  <Switch
+                    checked={formData.featured}
+                    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, featured: checked }))}
+                  />
+                  <span className="text-sm text-muted-foreground">
+                    Show on homepage
+                  </span>
                 </div>
               </div>
               <Button type="submit" className="w-full">
