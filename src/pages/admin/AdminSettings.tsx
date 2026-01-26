@@ -73,23 +73,13 @@ export default function AdminSettings() {
             <CardTitle className="font-serif">Branding</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="siteName">Site Name</Label>
-                <Input
-                  id="siteName"
-                  value={formData.siteName}
-                  onChange={(e) => setFormData(prev => ({ ...prev, siteName: e.target.value }))}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="tagline">Tagline</Label>
-                <Input
-                  id="tagline"
-                  value={formData.tagline}
-                  onChange={(e) => setFormData(prev => ({ ...prev, tagline: e.target.value }))}
-                />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="tagline">Tagline</Label>
+              <Input
+                id="tagline"
+                value={formData.tagline}
+                onChange={(e) => setFormData(prev => ({ ...prev, tagline: e.target.value }))}
+              />
             </div>
           </CardContent>
         </Card>
