@@ -27,7 +27,7 @@ export default function Header() {
             <img 
               src={logo} 
               alt="Multi Travels" 
-              className="h-10 md:h-12 w-auto transition-transform group-hover:scale-105"
+              className="h-7 md:h-8 w-auto transition-transform group-hover:scale-105"
             />
           </Link>
 
