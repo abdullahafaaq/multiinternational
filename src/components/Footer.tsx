@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
-import { Compass, Mail, Phone, MapPin, Facebook, Instagram, Twitter, Youtube } from 'lucide-react';
+import { Mail, Phone, MapPin, Facebook, Instagram, Twitter, Youtube } from 'lucide-react';
 import { useSite } from '@/contexts/SiteContext';
+import logo from '@/assets/logo.png';
 
 export default function Footer() {
   const { settings } = useSite();
@@ -11,13 +12,12 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Brand */}
           <div className="space-y-4">
-            <Link to="/" className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
-                <Compass className="w-6 h-6 text-primary-foreground" />
-              </div>
-              <span className="font-serif text-xl font-semibold">
-                {settings.siteName}
-              </span>
+            <Link to="/">
+              <img 
+                src={logo} 
+                alt="Multi Travels" 
+                className="h-10 w-auto brightness-0 invert"
+              />
             </Link>
             <p className="text-primary-foreground/70 text-sm leading-relaxed">
               {settings.tagline}. Creating unforgettable travel experiences since 2010.
@@ -100,7 +100,7 @@ export default function Footer() {
 
         <div className="border-t border-primary-foreground/10 mt-12 pt-8 text-center">
           <p className="text-primary-foreground/50 text-sm">
-            © {new Date().getFullYear()} {settings.siteName}. All rights reserved.
+            © {new Date().getFullYear()} Multi Travels. All rights reserved.
           </p>
         </div>
       </div>
