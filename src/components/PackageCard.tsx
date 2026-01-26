@@ -25,7 +25,9 @@ interface PackageCardProps {
 }
 
 export default function PackageCard({ pkg }: PackageCardProps) {
-  const imageSrc = imageMap[pkg.image] || maldivesImg;
+  // Support both preset image keys and custom URLs (http or data: base64)
+  const isCustomImage = pkg.image.startsWith('http') || pkg.image.startsWith('data:');
+  const imageSrc = isCustomImage ? pkg.image : (imageMap[pkg.image] || maldivesImg);
 
   return (
     <div className="group bg-card rounded-2xl overflow-hidden card-elevated">
