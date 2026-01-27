@@ -13,11 +13,11 @@ export default function Footer() {
           {/* Brand */}
           <div className="space-y-4">
             <Link to="/">
-              <img 
-                src={logo} 
-                alt="Multi International" 
-                className="h-10 w-auto brightness-0 invert"
-              />
+            <img 
+              src={logo} 
+              alt="Multi International" 
+              className="h-10 w-auto"
+            />
             </Link>
             <p className="text-primary-foreground/70 text-sm leading-relaxed">
               {settings.tagline}. Facilitating global trade since 2010.
