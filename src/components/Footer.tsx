@@ -95,9 +95,12 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-primary-foreground/10 mt-12 pt-8 text-center">
+        <div className="border-t border-primary-foreground/10 mt-12 pt-8 text-center space-y-2">
           <p className="text-primary-foreground/50 text-sm">
-            © {new Date().getFullYear()} Multi International. All rights reserved.
+            © {new Date().getFullYear()} Multi International (Pvt). Ltd. All rights reserved.
+          </p>
+          <p className="text-primary-foreground/40 text-xs">
+            www.multiinternational.asia
           </p>
         </div>
       </div>

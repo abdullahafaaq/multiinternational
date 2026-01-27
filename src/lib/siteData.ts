@@ -48,10 +48,10 @@ export const defaultSiteSettings: SiteSettings = {
   tagline: "Your Global Trade Partner",
   heroTitle: "Connecting Businesses Worldwide",
   heroSubtitle: "We specialize in premium quality imports and exports, connecting businesses across continents with reliable supply chains and competitive pricing.",
-  email: "info@multiinternational.com",
-  phone: "+1 (555) 123-4567",
-  address: "123 Trade Center, Business District, BD 12345",
-  aboutText: "Multi International has been facilitating global trade for over 15 years. Our team of trade experts combines market knowledge with international experience to deliver quality products and reliable partnerships that exceed expectations."
+  email: "info@multiinternational.asia",
+  phone: "+92 331 9056666 | 042 3755 3030",
+  address: "UG-21, Lucky Center, 7-8 Jail Road, Lahore, Pakistan",
+  aboutText: "Multi International has been facilitating global trade for over 15 years. Under the leadership of Chief Executive IKRAM UL HAQ, our team of trade experts combines market knowledge with international experience to deliver quality products and reliable partnerships that exceed expectations."
 };
 
 // Default products
