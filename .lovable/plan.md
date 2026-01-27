@@ -1,93 +1,232 @@
 
-
-# Admin Panel Authentication Implementation
+# Multi International - Import/Export Business Website Transformation
 
 ## Overview
 
-This plan adds password-protected access to the admin panel using JWT (JSON Web Token) authentication. When someone tries to access `/admin`, they'll see a login page. After entering the correct password, a JWT token is created and stored in the browser session, allowing access to all admin pages until they log out or close the browser.
+This plan transforms the current "Multi Travel" travel agency website into "Multi International" - a professional import/export business website. The core architecture (admin panel, authentication, state management) will be preserved, but all content, data models, and terminology will be updated to reflect international trade operations.
 
-## What You'll Get
+## Key Changes Summary
 
-- **Login Page** - A branded login form matching your site's design with password field and "Sign In" button
-- **Protected Admin Routes** - All admin pages (`/admin/*`) will redirect to login if not authenticated  
-- **Logout Functionality** - A logout button in the admin sidebar to end the session
-- **Session Persistence** - Stay logged in while the browser tab is open (uses sessionStorage for security)
+| Current (Travel) | New (Import/Export) |
+|------------------|---------------------|
+| Travel Packages | Products/Commodities |
+| Destinations | Countries/Trade Regions |
+| Duration/Price | Unit/Pricing/MOQ |
+| Services | Trade Services |
+| Inquiries | Business Inquiries |
+| Travelers | Clients/Partners |
 
-## How It Works
+## Visual Transformation
+
+The website will maintain the same elegant, professional design aesthetic but with updated imagery and content that reflects global trade:
 
 ```text
-+------------------+     +------------------+     +------------------+
-|   User visits    | --> |  Check for valid | --> |  Valid token?    |
-|   /admin         |     |  JWT token       |     |  Show admin      |
-+------------------+     +------------------+     +------------------+
-                                 |                        ^
-                                 v (no token)             |
-                         +------------------+             |
-                         |  Show login page |             |
-                         +------------------+             |
-                                 |                        |
-                                 v (correct password)     |
-                         +------------------+             |
-                         |  Generate JWT    |-------------+
-                         |  Store in session|
-                         +------------------+
++--------------------------------------------------+
+|  HEADER                                           |
+|  [Logo] Home | Products | Services | About | Contact |
++--------------------------------------------------+
+|                                                    |
+|  HERO SECTION                                      |
+|  "Your Global Trade Partner"                       |
+|  "Connecting businesses worldwide with quality     |
+|   products and reliable supply chains"            |
+|  [Explore Products] [Request Quote]                |
+|                                                    |
++--------------------------------------------------+
+|                                                    |
+|  FEATURED PRODUCTS                                 |
+|  Agricultural | Textiles | Machinery | Chemicals  |
+|                                                    |
++--------------------------------------------------+
+|                                                    |
+|  STATS: 15+ Years | 50+ Countries | 1000+ Clients |
+|                                                    |
++--------------------------------------------------+
+|                                                    |
+|  TRADE SERVICES                                    |
+|  Export/Import | Customs | Logistics | Consulting |
+|                                                    |
++--------------------------------------------------+
 ```
-
-## Important Security Note
-
-Since this is a client-side only solution (no backend), the password verification happens in the browser. This provides a **basic layer of protection** suitable for:
-- Preventing casual access to admin features
-- Keeping the admin panel hidden from regular visitors
-
-For stronger security in the future, you can upgrade to Lovable Cloud which provides server-side authentication with encrypted password storage.
 
 ---
 
-## Technical Details
+## Implementation Phases
 
-### New Files to Create
+### Phase 1: Data Model Updates
 
-| File | Purpose |
-|------|---------|
-| `src/contexts/AuthContext.tsx` | Manages authentication state (login status, token) |
-| `src/pages/admin/AdminLogin.tsx` | Login page component with password form |
-| `src/lib/auth.ts` | JWT token generation and validation utilities |
+**File: `src/lib/siteData.ts`**
 
-### Files to Modify
+Replace travel-specific interfaces with import/export terminology:
 
-| File | Changes |
-|------|---------|
-| `src/App.tsx` | Wrap app with AuthProvider |
-| `src/components/admin/AdminLayout.tsx` | Add authentication check and logout button |
+- `TravelPackage` becomes `Product` with fields:
+  - `id`, `name`, `category` (replaces destination)
+  - `origin` (source country)
+  - `unit`, `minOrderQuantity`, `pricePerUnit`
+  - `description`, `specifications` (replaces highlights)
+  - `image`, `featured`
 
-### Implementation Approach
+- Update `defaultSiteSettings`:
+  - `siteName`: "Multi International"
+  - `tagline`: "Your Global Trade Partner"
+  - `heroTitle`: "Connecting Businesses Worldwide"
+  - `heroSubtitle`: Import/export focused messaging
+  - Update contact info placeholders
 
-1. **Auth Context** - Create a React context to manage:
-   - `isAuthenticated` - Whether user is logged in
-   - `login(password)` - Validate password and create JWT
-   - `logout()` - Clear token and redirect to login
+- Replace `defaultPackages` with sample products:
+  - Agricultural Products (Rice, Coffee, Spices)
+  - Textiles & Garments
+  - Industrial Machinery
+  - Raw Materials
+  - Consumer Electronics
+  - Chemicals & Pharmaceuticals
 
-2. **JWT Token** - Generate a signed token containing:
-   - Issued timestamp
-   - Expiration (8 hours)
-   - Role identifier
+- Replace `defaultServices` with trade services:
+  - Import/Export Consulting
+  - Customs Clearance
+  - Freight Forwarding
+  - Quality Inspection
+  - Trade Documentation
+  - Supply Chain Management
 
-3. **Protected Route Logic** - In AdminLayout:
-   - Check for valid token on mount
-   - Redirect to `/admin/login` if not authenticated
-   - Show admin content if authenticated
+### Phase 2: Context & State Updates
 
-4. **Login Page** - Features:
-   - Password input field
-   - Error message for incorrect password
-   - Loading state during validation
-   - Matches existing site styling
+**File: `src/contexts/SiteContext.tsx`**
 
-5. **Logout** - Replace "Back to Website" with "Logout" button that:
-   - Clears the session token
-   - Redirects to login page
+- Rename `packages` to `products`
+- Update localStorage keys: `multiinternational_*`
+- Update function names: `addProduct`, `updateProduct`, `deleteProduct`
+- Keep inquiry system (works for both business models)
 
-### Password Configuration
+### Phase 3: Component Updates
 
-The admin password will be configurable in the Admin Settings page. Default password: `admin123` (you should change this immediately after setup).
+**Header (`src/components/Header.tsx`)**
+- Update navigation: "Packages" to "Products"
+- Change CTA button: "Book Now" to "Get Quote"
 
+**Footer (`src/components/Footer.tsx`)**
+- Update "Popular Destinations" to "Trade Regions"
+- Add regions: Asia Pacific, Europe, Americas, Middle East, Africa
+- Update copyright to "Multi International"
+
+**Hero Section (`src/components/HeroSection.tsx`)**
+- Update messaging for international trade
+- New hero image suggestion (use placeholder or request upload)
+- Change CTAs: "Explore Packages" to "View Products"
+
+**Stats Section (`src/components/StatsSection.tsx`)**
+- Update stats:
+  - "15+ Years of Experience" (keep)
+  - "50+ Countries" (trade partners)
+  - "1000+ Satisfied Clients"
+  - "4.9 Client Rating"
+
+**CTA Section (`src/components/CTASection.tsx`)**
+- Update headline: "Ready to Expand Your Business Globally?"
+- Update button: "Browse Packages" to "View Products"
+
+**Service Card (`src/components/ServiceCard.tsx`)**
+- Add new icons for trade services (Ship, Package, FileCheck, etc.)
+
+**Product Card (rename from PackageCard)**
+- Update display fields for products
+- Show category, origin, MOQ instead of destination, duration
+
+### Phase 4: Page Updates
+
+**Home (`src/pages/Index.tsx`)**
+- Update component imports (FeaturedProducts instead of FeaturedPackages)
+
+**Products Page (rename from Packages)**
+- Update terminology throughout
+- Product grid with filtering by category
+
+**Services Page**
+- Update hero text for trade services
+
+**About Page**
+- Update values for business context:
+  - "Passion for Travel" to "Global Expertise"
+  - "Global Expertise" to "Quality Assurance"
+  - "Personalized Service" to "Reliable Partnerships"
+  - "Quality Guaranteed" to "Competitive Pricing"
+- Update story content for import/export business
+
+**Contact Page**
+- Update messaging: "travel plans" to "business requirements"
+- "Interested Package" to "Product Interest"
+
+### Phase 5: Admin Panel Updates
+
+**Dashboard (`src/pages/admin/AdminDashboard.tsx`)**
+- Update welcome message to "Multi International"
+- Rename "Packages" to "Products"
+
+**Admin Products (rename from AdminPackages)**
+- Update all form fields for product data
+- Update preset images or allow custom uploads
+- Change terminology throughout
+
+**Admin Services**
+- Keep as-is (works for both contexts)
+
+**Admin Settings**
+- No changes needed (already simplified)
+
+### Phase 6: SEO & Branding
+
+**index.html**
+- Update title to "Multi International"
+- Update meta descriptions for import/export
+- Note: You'll need to provide a new logo for Multi International
+
+### Phase 7: Routing Updates
+
+**App.tsx**
+- Rename `/packages` route to `/products`
+- Update component imports
+
+---
+
+## New Asset Requirements
+
+To complete the transformation, you'll need to provide:
+
+1. **Multi International Logo** - For header, footer, and favicon
+2. **Hero Image** - Suggested: shipping containers, global map, or trade imagery
+3. **Product Images** - Or we can use placeholder images initially
+
+---
+
+## Technical Notes
+
+- All existing functionality (authentication, admin CRUD, inquiries) is preserved
+- localStorage keys will be renamed to avoid conflicts with old data
+- The design system (colors, typography, animations) remains unchanged
+- Image management system works the same for products as it did for travel packages
+
+---
+
+## Files to Create/Modify
+
+| Action | File |
+|--------|------|
+| Modify | `src/lib/siteData.ts` |
+| Modify | `src/contexts/SiteContext.tsx` |
+| Modify | `src/components/Header.tsx` |
+| Modify | `src/components/Footer.tsx` |
+| Modify | `src/components/HeroSection.tsx` |
+| Modify | `src/components/StatsSection.tsx` |
+| Modify | `src/components/CTASection.tsx` |
+| Modify | `src/components/ServiceCard.tsx` |
+| Rename/Modify | `src/components/PackageCard.tsx` to `ProductCard.tsx` |
+| Rename/Modify | `src/components/FeaturedPackages.tsx` to `FeaturedProducts.tsx` |
+| Rename/Modify | `src/pages/Packages.tsx` to `Products.tsx` |
+| Modify | `src/pages/Index.tsx` |
+| Modify | `src/pages/About.tsx` |
+| Modify | `src/pages/Contact.tsx` |
+| Modify | `src/pages/Services.tsx` |
+| Modify | `src/pages/admin/AdminDashboard.tsx` |
+| Rename/Modify | `src/pages/admin/AdminPackages.tsx` to `AdminProducts.tsx` |
+| Modify | `src/App.tsx` |
+| Modify | `index.html` |
