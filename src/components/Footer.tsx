@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Mail, Phone, MapPin, Facebook, Linkedin, Twitter } from 'lucide-react';
 import { useSite } from '@/contexts/SiteContext';
-import logo from '@/assets/logo.png';
+import logo from '@/assets/logo-white.png';
 
 export default function Footer() {
   const { settings } = useSite();
