@@ -12,7 +12,7 @@ export default function Header() {
   
   const navLinks = [
     { path: '/', label: 'Home' },
-    { path: '/packages', label: 'Packages' },
+    { path: '/products', label: 'Products' },
     { path: '/services', label: 'Services' },
     { path: '/about', label: 'About' },
     { path: '/contact', label: 'Contact' },
@@ -26,7 +26,7 @@ export default function Header() {
           <Link to="/" className="group">
             <img 
               src={logo} 
-              alt="Multi Travels" 
+              alt="Multi International" 
               className="h-7 md:h-8 w-auto transition-transform group-hover:scale-105"
             />
           </Link>
@@ -52,7 +52,7 @@ export default function Header() {
           <div className="hidden md:block">
             <Link to="/contact">
               <Button className="gold-gradient text-accent-foreground font-semibold shadow-lg hover:shadow-xl transition-shadow">
-                Book Now
+                Get Quote
               </Button>
             </Link>
           </div>
@@ -87,7 +87,7 @@ export default function Header() {
               ))}
               <Link to="/contact" onClick={() => setIsMenuOpen(false)}>
                 <Button className="w-full mt-2 gold-gradient text-accent-foreground font-semibold">
-                  Book Now
+                  Get Quote
                 </Button>
               </Link>
             </div>

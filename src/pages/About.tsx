@@ -2,28 +2,28 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CTASection from '@/components/CTASection';
 import { useSite } from '@/contexts/SiteContext';
-import { Award, Heart, Globe, Users } from 'lucide-react';
+import { Award, Globe, Users, Shield } from 'lucide-react';
 
 const values = [
   {
-    icon: Heart,
-    title: 'Passion for Travel',
-    description: 'We believe travel transforms lives. Every journey we plan is infused with our love for exploration.'
-  },
-  {
     icon: Globe,
     title: 'Global Expertise',
-    description: 'Our team has traveled to over 100 countries, bringing firsthand knowledge to every itinerary.'
+    description: 'Our team has extensive experience in international markets, bringing firsthand knowledge to every transaction.'
+  },
+  {
+    icon: Shield,
+    title: 'Quality Assurance',
+    description: 'We maintain strict quality standards and conduct thorough inspections to ensure product excellence.'
   },
   {
     icon: Users,
-    title: 'Personalized Service',
-    description: 'No two travelers are alike. We craft unique experiences tailored to your preferences.'
+    title: 'Reliable Partnerships',
+    description: 'We build long-term relationships with trusted suppliers and clients around the world.'
   },
   {
     icon: Award,
-    title: 'Quality Guaranteed',
-    description: 'We partner only with trusted providers to ensure exceptional quality at every step.'
+    title: 'Competitive Pricing',
+    description: 'Our established network allows us to offer the best prices while maintaining quality standards.'
   },
 ];
 
@@ -92,13 +92,13 @@ export default function About() {
                   </h2>
                   <div className="space-y-4 text-muted-foreground">
                     <p>
-                      Founded in 2010, {settings.siteName} began with a simple dream: to make extraordinary travel experiences accessible to everyone.
+                      Founded in 2010, {settings.siteName} began with a simple vision: to bridge global markets and connect businesses with quality products from around the world.
                     </p>
                     <p>
-                      What started as a small team of passionate travelers has grown into a full-service travel agency serving thousands of adventurers worldwide.
+                      What started as a small trading company has grown into a comprehensive import/export business serving clients across multiple continents.
                     </p>
                     <p>
-                      Today, we continue to push boundaries, discovering new destinations and creating innovative travel experiences that inspire and delight.
+                      Today, we continue to expand our network, forging new partnerships and discovering innovative products that help our clients succeed in their markets.
                     </p>
                   </div>
                 </div>
@@ -108,12 +108,12 @@ export default function About() {
                     <p className="text-sm opacity-80">Years</p>
                   </div>
                   <div className="bg-accent text-accent-foreground rounded-2xl p-6 text-center">
-                    <p className="font-serif text-4xl font-bold mb-2">50K+</p>
-                    <p className="text-sm opacity-80">Travelers</p>
+                    <p className="font-serif text-4xl font-bold mb-2">50+</p>
+                    <p className="text-sm opacity-80">Countries</p>
                   </div>
                   <div className="bg-accent text-accent-foreground rounded-2xl p-6 text-center">
-                    <p className="font-serif text-4xl font-bold mb-2">100+</p>
-                    <p className="text-sm opacity-80">Destinations</p>
+                    <p className="font-serif text-4xl font-bold mb-2">1000+</p>
+                    <p className="text-sm opacity-80">Clients</p>
                   </div>
                   <div className="bg-primary text-primary-foreground rounded-2xl p-6 text-center">
                     <p className="font-serif text-4xl font-bold mb-2">4.9</p>

@@ -1,8 +1,7 @@
-import { ArrowRight, Play } from 'lucide-react';
+import { ArrowRight, Globe } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useSite } from '@/contexts/SiteContext';
-import heroImage from '@/assets/hero-maldives.jpg';
 
 export default function HeroSection() {
   const { settings } = useSite();
@@ -12,8 +11,8 @@ export default function HeroSection() {
       {/* Background Image */}
       <div className="absolute inset-0">
         <img
-          src={heroImage}
-          alt="Beautiful travel destination"
+          src="https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?w=1920"
+          alt="Global trade and shipping"
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 hero-overlay" />
@@ -32,16 +31,16 @@ export default function HeroSection() {
             {settings.heroSubtitle}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-up opacity-0 stagger-4">
-            <Link to="/packages">
+            <Link to="/products">
               <Button size="lg" className="gold-gradient text-accent-foreground font-semibold shadow-lg hover:shadow-xl transition-all group w-full sm:w-auto">
-                Explore Packages
+                View Products
                 <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
             <Link to="/about">
               <Button size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 w-full sm:w-auto">
-                <Play className="mr-2 w-5 h-5" />
-                Watch Our Story
+                <Globe className="mr-2 w-5 h-5" />
+                Learn About Us
               </Button>
             </Link>
           </div>

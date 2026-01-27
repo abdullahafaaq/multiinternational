@@ -7,12 +7,12 @@ import { Inquiry } from '@/lib/siteData';
 import { toast } from 'sonner';
 
 export default function AdminInquiries() {
-  const { inquiries, packages, updateInquiryStatus, deleteInquiry } = useSite();
+  const { inquiries, products, updateInquiryStatus, deleteInquiry } = useSite();
 
-  const getPackageName = (packageId?: string) => {
-    if (!packageId) return 'General Inquiry';
-    const pkg = packages.find(p => p.id === packageId);
-    return pkg?.name || 'Unknown Package';
+  const getProductName = (productId?: string) => {
+    if (!productId) return 'General Inquiry';
+    const product = products.find(p => p.id === productId);
+    return product?.name || 'Unknown Product';
   };
 
   const handleStatusChange = (id: string, status: Inquiry['status']) => {
@@ -73,7 +73,7 @@ export default function AdminInquiries() {
                       )}
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      <span className="font-medium">Package:</span> {getPackageName(inquiry.packageId)}
+                      <span className="font-medium">Product:</span> {getProductName(inquiry.productId)}
                     </p>
                     <p className="text-foreground bg-muted/50 rounded-xl p-4">
                       {inquiry.message}

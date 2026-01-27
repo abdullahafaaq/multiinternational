@@ -10,32 +10,45 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useSite } from '@/contexts/SiteContext';
-import { TravelPackage } from '@/lib/siteData';
+import { Product } from '@/lib/siteData';
 import { toast } from 'sonner';
 
+const categoryOptions = [
+  'Agricultural Products',
+  'Industrial Machinery',
+  'Textiles & Garments',
+  'Chemicals',
+  'Electronics',
+  'Raw Materials',
+  'Consumer Goods',
+  'Other'
+];
+
 const presetImageOptions = [
-  { value: 'maldives', label: 'Maldives' },
-  { value: 'santorini', label: 'Santorini, Greece' },
-  { value: 'swiss-alps', label: 'Swiss Alps' },
-  { value: 'bali', label: 'Bali' },
-  { value: 'dubai', label: 'Dubai' },
-  { value: 'machu-picchu', label: 'Machu Picchu' },
+  { value: 'rice', label: 'Rice/Grains' },
+  { value: 'coffee', label: 'Coffee/Beverages' },
+  { value: 'machinery', label: 'Machinery' },
+  { value: 'textiles', label: 'Textiles' },
+  { value: 'chemicals', label: 'Chemicals' },
+  { value: 'electronics', label: 'Electronics' },
 ];
 
 const isCustomUrl = (image: string) => image.startsWith('http') || image.startsWith('data:');
 
-export default function AdminPackages() {
-  const { packages, addPackage, updatePackage, deletePackage } = useSite();
+export default function AdminProducts() {
+  const { products, addProduct, updateProduct, deleteProduct } = useSite();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingPackage, setEditingPackage] = useState<TravelPackage | null>(null);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [formData, setFormData] = useState({
     name: '',
-    destination: '',
-    duration: '',
-    price: 0,
+    category: 'Agricultural Products',
+    origin: '',
+    unit: 'Metric Ton',
+    minOrderQuantity: '',
+    pricePerUnit: 0,
     description: '',
-    highlights: '',
-    image: 'maldives',
+    specifications: '',
+    image: 'rice',
     featured: false
   });
   const [imageMode, setImageMode] = useState<'preset' | 'url' | 'upload'>('preset');
@@ -45,35 +58,39 @@ export default function AdminPackages() {
   const resetForm = () => {
     setFormData({
       name: '',
-      destination: '',
-      duration: '',
-      price: 0,
+      category: 'Agricultural Products',
+      origin: '',
+      unit: 'Metric Ton',
+      minOrderQuantity: '',
+      pricePerUnit: 0,
       description: '',
-      highlights: '',
-      image: 'maldives',
+      specifications: '',
+      image: 'rice',
       featured: false
     });
-    setEditingPackage(null);
+    setEditingProduct(null);
     setImageMode('preset');
     setCustomImageUrl('');
   };
 
-  const openEditDialog = (pkg: TravelPackage) => {
-    setEditingPackage(pkg);
-    const isCustom = isCustomUrl(pkg.image);
+  const openEditDialog = (product: Product) => {
+    setEditingProduct(product);
+    const isCustom = isCustomUrl(product.image);
     setFormData({
-      name: pkg.name,
-      destination: pkg.destination,
-      duration: pkg.duration,
-      price: pkg.price,
-      description: pkg.description,
-      highlights: pkg.highlights.join(', '),
-      image: pkg.image,
-      featured: pkg.featured
+      name: product.name,
+      category: product.category,
+      origin: product.origin,
+      unit: product.unit,
+      minOrderQuantity: product.minOrderQuantity,
+      pricePerUnit: product.pricePerUnit,
+      description: product.description,
+      specifications: product.specifications.join(', '),
+      image: product.image,
+      featured: product.featured
     });
     if (isCustom) {
       setImageMode('url');
-      setCustomImageUrl(pkg.image);
+      setCustomImageUrl(product.image);
     } else {
       setImageMode('preset');
       setCustomImageUrl('');
@@ -113,23 +130,25 @@ export default function AdminPackages() {
       finalImage = customImageUrl;
     }
 
-    const packageData = {
+    const productData = {
       name: formData.name,
-      destination: formData.destination,
-      duration: formData.duration,
-      price: formData.price,
+      category: formData.category,
+      origin: formData.origin,
+      unit: formData.unit,
+      minOrderQuantity: formData.minOrderQuantity,
+      pricePerUnit: formData.pricePerUnit,
       description: formData.description,
-      highlights: formData.highlights.split(',').map(h => h.trim()).filter(Boolean),
+      specifications: formData.specifications.split(',').map(s => s.trim()).filter(Boolean),
       image: finalImage,
       featured: formData.featured
     };
 
-    if (editingPackage) {
-      updatePackage({ ...packageData, id: editingPackage.id });
-      toast.success('Package updated successfully!');
+    if (editingProduct) {
+      updateProduct({ ...productData, id: editingProduct.id });
+      toast.success('Product updated successfully!');
     } else {
-      addPackage(packageData);
-      toast.success('Package added successfully!');
+      addProduct(productData);
+      toast.success('Product added successfully!');
     }
 
     setIsDialogOpen(false);
@@ -137,9 +156,9 @@ export default function AdminPackages() {
   };
 
   const handleDelete = (id: string) => {
-    if (confirm('Are you sure you want to delete this package?')) {
-      deletePackage(id);
-      toast.success('Package deleted successfully!');
+    if (confirm('Are you sure you want to delete this product?')) {
+      deleteProduct(id);
+      toast.success('Product deleted successfully!');
     }
   };
 
@@ -147,8 +166,8 @@ export default function AdminPackages() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-serif text-3xl font-bold text-foreground mb-2">Packages</h1>
-          <p className="text-muted-foreground">Manage your travel packages.</p>
+          <h1 className="font-serif text-3xl font-bold text-foreground mb-2">Products</h1>
+          <p className="text-muted-foreground">Manage your product catalog.</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={(open) => {
           setIsDialogOpen(open);
@@ -157,57 +176,85 @@ export default function AdminPackages() {
           <DialogTrigger asChild>
             <Button className="gap-2">
               <Plus className="w-4 h-4" />
-              Add Package
+              Add Product
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="font-serif text-2xl">
-                {editingPackage ? 'Edit Package' : 'Add New Package'}
+                {editingProduct ? 'Edit Product' : 'Add New Product'}
               </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Package Name</Label>
+                  <Label htmlFor="name">Product Name</Label>
                   <Input
                     id="name"
                     value={formData.name}
                     onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                    placeholder="Maldives Paradise Escape"
+                    placeholder="Premium Basmati Rice"
                     required
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="destination">Destination</Label>
+                  <Label htmlFor="category">Category</Label>
+                  <Select
+                    value={formData.category}
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categoryOptions.map((cat) => (
+                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="origin">Origin Country</Label>
                   <Input
-                    id="destination"
-                    value={formData.destination}
-                    onChange={(e) => setFormData(prev => ({ ...prev, destination: e.target.value }))}
-                    placeholder="Maldives"
+                    id="origin"
+                    value={formData.origin}
+                    onChange={(e) => setFormData(prev => ({ ...prev, origin: e.target.value }))}
+                    placeholder="India"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="unit">Unit</Label>
+                  <Input
+                    id="unit"
+                    value={formData.unit}
+                    onChange={(e) => setFormData(prev => ({ ...prev, unit: e.target.value }))}
+                    placeholder="Metric Ton"
                     required
                   />
                 </div>
               </div>
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="duration">Duration</Label>
+                  <Label htmlFor="moq">Min. Order Quantity</Label>
                   <Input
-                    id="duration"
-                    value={formData.duration}
-                    onChange={(e) => setFormData(prev => ({ ...prev, duration: e.target.value }))}
-                    placeholder="7 Days / 6 Nights"
+                    id="moq"
+                    value={formData.minOrderQuantity}
+                    onChange={(e) => setFormData(prev => ({ ...prev, minOrderQuantity: e.target.value }))}
+                    placeholder="20 MT"
                     required
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="price">Price (USD)</Label>
+                  <Label htmlFor="price">Price per Unit (USD)</Label>
                   <Input
                     id="price"
                     type="number"
-                    value={formData.price}
-                    onChange={(e) => setFormData(prev => ({ ...prev, price: parseInt(e.target.value) }))}
-                    placeholder="2999"
+                    value={formData.pricePerUnit}
+                    onChange={(e) => setFormData(prev => ({ ...prev, pricePerUnit: parseInt(e.target.value) }))}
+                    placeholder="1200"
                     required
                   />
                 </div>
@@ -218,22 +265,22 @@ export default function AdminPackages() {
                   id="description"
                   value={formData.description}
                   onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                  placeholder="Describe the package..."
+                  placeholder="Describe the product..."
                   rows={3}
                   required
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="highlights">Highlights (comma separated)</Label>
+                <Label htmlFor="specifications">Specifications (comma separated)</Label>
                 <Input
-                  id="highlights"
-                  value={formData.highlights}
-                  onChange={(e) => setFormData(prev => ({ ...prev, highlights: e.target.value }))}
-                  placeholder="Overwater Villa, All-Inclusive Dining, Sunset Cruise"
+                  id="specifications"
+                  value={formData.specifications}
+                  onChange={(e) => setFormData(prev => ({ ...prev, specifications: e.target.value }))}
+                  placeholder="Extra Long Grain, 2 Year Aged, 1% Broken Max"
                 />
               </div>
               <div className="space-y-4">
-                <Label>Destination Image</Label>
+                <Label>Product Image</Label>
                 <Tabs value={imageMode} onValueChange={(v) => setImageMode(v as 'preset' | 'url' | 'upload')}>
                   <TabsList className="grid w-full grid-cols-3">
                     <TabsTrigger value="preset" className="gap-2">
@@ -252,7 +299,7 @@ export default function AdminPackages() {
                   
                   <TabsContent value="preset" className="mt-4">
                     <Select
-                      value={isCustomUrl(formData.image) ? 'maldives' : formData.image}
+                      value={isCustomUrl(formData.image) ? 'rice' : formData.image}
                       onValueChange={(value) => setFormData(prev => ({ ...prev, image: value }))}
                     >
                       <SelectTrigger>
@@ -332,37 +379,37 @@ export default function AdminPackages() {
                 </div>
               </div>
               <Button type="submit" className="w-full">
-                {editingPackage ? 'Update Package' : 'Add Package'}
+                {editingProduct ? 'Update Product' : 'Add Product'}
               </Button>
             </form>
           </DialogContent>
         </Dialog>
       </div>
 
-      {/* Packages List */}
+      {/* Products List */}
       <div className="grid gap-4">
-        {packages.map((pkg) => (
-          <Card key={pkg.id}>
+        {products.map((product) => (
+          <Card key={product.id}>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  {pkg.featured && (
+                  {product.featured && (
                     <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center">
                       <Star className="w-5 h-5 text-accent" />
                     </div>
                   )}
                   <div>
-                    <h3 className="font-semibold text-foreground">{pkg.name}</h3>
+                    <h3 className="font-semibold text-foreground">{product.name}</h3>
                     <p className="text-sm text-muted-foreground">
-                      {pkg.destination} • {pkg.duration} • ${pkg.price.toLocaleString()}
+                      {product.category} • {product.origin} • ${product.pricePerUnit.toLocaleString()}/{product.unit}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="sm" onClick={() => openEditDialog(pkg)}>
+                  <Button variant="ghost" size="sm" onClick={() => openEditDialog(product)}>
                     <Edit2 className="w-4 h-4" />
                   </Button>
-                  <Button variant="ghost" size="sm" onClick={() => handleDelete(pkg.id)}>
+                  <Button variant="ghost" size="sm" onClick={() => handleDelete(product.id)}>
                     <Trash2 className="w-4 h-4 text-destructive" />
                   </Button>
                 </div>

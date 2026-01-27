@@ -1,23 +1,23 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import {
   SiteSettings,
-  TravelPackage,
+  Product,
   Service,
   Inquiry,
   defaultSiteSettings,
-  defaultPackages,
+  defaultProducts,
   defaultServices
 } from '@/lib/siteData';
 
 interface SiteContextType {
   settings: SiteSettings;
-  packages: TravelPackage[];
+  products: Product[];
   services: Service[];
   inquiries: Inquiry[];
   updateSettings: (settings: SiteSettings) => void;
-  addPackage: (pkg: Omit<TravelPackage, 'id'>) => void;
-  updatePackage: (pkg: TravelPackage) => void;
-  deletePackage: (id: string) => void;
+  addProduct: (product: Omit<Product, 'id'>) => void;
+  updateProduct: (product: Product) => void;
+  deleteProduct: (id: string) => void;
   addService: (service: Omit<Service, 'id'>) => void;
   updateService: (service: Service) => void;
   deleteService: (id: string) => void;
@@ -30,56 +30,56 @@ const SiteContext = createContext<SiteContextType | undefined>(undefined);
 
 export function SiteProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<SiteSettings>(() => {
-    const saved = localStorage.getItem('multitravel_settings');
+    const saved = localStorage.getItem('multiinternational_settings');
     return saved ? JSON.parse(saved) : defaultSiteSettings;
   });
 
-  const [packages, setPackages] = useState<TravelPackage[]>(() => {
-    const saved = localStorage.getItem('multitravel_packages');
-    return saved ? JSON.parse(saved) : defaultPackages;
+  const [products, setProducts] = useState<Product[]>(() => {
+    const saved = localStorage.getItem('multiinternational_products');
+    return saved ? JSON.parse(saved) : defaultProducts;
   });
 
   const [services, setServices] = useState<Service[]>(() => {
-    const saved = localStorage.getItem('multitravel_services');
+    const saved = localStorage.getItem('multiinternational_services');
     return saved ? JSON.parse(saved) : defaultServices;
   });
 
   const [inquiries, setInquiries] = useState<Inquiry[]>(() => {
-    const saved = localStorage.getItem('multitravel_inquiries');
+    const saved = localStorage.getItem('multiinternational_inquiries');
     return saved ? JSON.parse(saved) : [];
   });
 
   useEffect(() => {
-    localStorage.setItem('multitravel_settings', JSON.stringify(settings));
+    localStorage.setItem('multiinternational_settings', JSON.stringify(settings));
   }, [settings]);
 
   useEffect(() => {
-    localStorage.setItem('multitravel_packages', JSON.stringify(packages));
-  }, [packages]);
+    localStorage.setItem('multiinternational_products', JSON.stringify(products));
+  }, [products]);
 
   useEffect(() => {
-    localStorage.setItem('multitravel_services', JSON.stringify(services));
+    localStorage.setItem('multiinternational_services', JSON.stringify(services));
   }, [services]);
 
   useEffect(() => {
-    localStorage.setItem('multitravel_inquiries', JSON.stringify(inquiries));
+    localStorage.setItem('multiinternational_inquiries', JSON.stringify(inquiries));
   }, [inquiries]);
 
   const updateSettings = (newSettings: SiteSettings) => {
     setSettings(newSettings);
   };
 
-  const addPackage = (pkg: Omit<TravelPackage, 'id'>) => {
-    const newPkg = { ...pkg, id: Date.now().toString() };
-    setPackages(prev => [...prev, newPkg]);
+  const addProduct = (product: Omit<Product, 'id'>) => {
+    const newProduct = { ...product, id: Date.now().toString() };
+    setProducts(prev => [...prev, newProduct]);
   };
 
-  const updatePackage = (pkg: TravelPackage) => {
-    setPackages(prev => prev.map(p => p.id === pkg.id ? pkg : p));
+  const updateProduct = (product: Product) => {
+    setProducts(prev => prev.map(p => p.id === product.id ? product : p));
   };
 
-  const deletePackage = (id: string) => {
-    setPackages(prev => prev.filter(p => p.id !== id));
+  const deleteProduct = (id: string) => {
+    setProducts(prev => prev.filter(p => p.id !== id));
   };
 
   const addService = (service: Omit<Service, 'id'>) => {
@@ -116,13 +116,13 @@ export function SiteProvider({ children }: { children: ReactNode }) {
   return (
     <SiteContext.Provider value={{
       settings,
-      packages,
+      products,
       services,
       inquiries,
       updateSettings,
-      addPackage,
-      updatePackage,
-      deletePackage,
+      addProduct,
+      updateProduct,
+      deleteProduct,
       addService,
       updateService,
       deleteService,

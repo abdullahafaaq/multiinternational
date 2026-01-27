@@ -1,8 +1,8 @@
 const stats = [
   { value: '15+', label: 'Years of Experience' },
-  { value: '50K+', label: 'Happy Travelers' },
-  { value: '100+', label: 'Destinations' },
-  { value: '4.9', label: 'Customer Rating' },
+  { value: '50+', label: 'Countries Served' },
+  { value: '1000+', label: 'Satisfied Clients' },
+  { value: '4.9', label: 'Client Rating' },
 ];
 
 export default function StatsSection() {

@@ -13,20 +13,20 @@ import { Mail, Phone, MapPin, Send } from 'lucide-react';
 
 export default function Contact() {
   const [searchParams] = useSearchParams();
-  const { settings, packages, addInquiry } = useSite();
+  const { settings, products, addInquiry } = useSite();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
-    packageId: '',
+    productId: '',
     message: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    const packageId = searchParams.get('package');
-    if (packageId) {
-      setFormData(prev => ({ ...prev, packageId }));
+    const productId = searchParams.get('product');
+    if (productId) {
+      setFormData(prev => ({ ...prev, productId }));
     }
   }, [searchParams]);
 
@@ -39,7 +39,7 @@ export default function Contact() {
 
     addInquiry(formData);
     toast.success('Thank you! We\'ll get back to you soon.');
-    setFormData({ name: '', email: '', phone: '', packageId: '', message: '' });
+    setFormData({ name: '', email: '', phone: '', productId: '', message: '' });
     setIsSubmitting(false);
   };
 
@@ -57,7 +57,7 @@ export default function Contact() {
               Contact Us
             </h1>
             <p className="text-primary-foreground/80 max-w-2xl mx-auto text-lg">
-              Ready to start your adventure? Get in touch with our travel experts and let's plan your dream journey.
+              Ready to grow your business globally? Get in touch with our trade experts to discuss your requirements.
             </p>
           </div>
         </section>
@@ -162,18 +162,18 @@ export default function Contact() {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="package">Interested Package (Optional)</Label>
+                        <Label htmlFor="product">Product Interest (Optional)</Label>
                         <Select
-                          value={formData.packageId}
-                          onValueChange={(value) => setFormData(prev => ({ ...prev, packageId: value }))}
+                          value={formData.productId}
+                          onValueChange={(value) => setFormData(prev => ({ ...prev, productId: value }))}
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder="Select a package" />
+                            <SelectValue placeholder="Select a product" />
                           </SelectTrigger>
                           <SelectContent>
-                            {packages.map((pkg) => (
-                              <SelectItem key={pkg.id} value={pkg.id}>
-                                {pkg.name}
+                            {products.map((product) => (
+                              <SelectItem key={product.id} value={product.id}>
+                                {product.name}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -186,7 +186,7 @@ export default function Contact() {
                         id="message"
                         value={formData.message}
                         onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
-                        placeholder="Tell us about your travel plans..."
+                        placeholder="Tell us about your business requirements..."
                         rows={5}
                         required
                       />

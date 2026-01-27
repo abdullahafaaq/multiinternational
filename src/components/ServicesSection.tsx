@@ -18,7 +18,7 @@ export default function ServicesSection() {
             Our Services
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            From planning to execution, we handle every detail of your journey with care and expertise.
+            From sourcing to delivery, we handle every aspect of your international trade with care and expertise.
           </p>
         </div>
 
