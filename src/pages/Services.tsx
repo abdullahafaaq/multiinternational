@@ -21,7 +21,7 @@ export default function Services() {
               Our Services
             </h1>
             <p className="text-primary-foreground/80 max-w-2xl mx-auto text-lg">
-              From planning to execution, we provide comprehensive travel services to make your journey seamless and memorable.
+              From sourcing to delivery, we provide comprehensive trade services to make your international business seamless and profitable.
             </p>
           </div>
         </section>

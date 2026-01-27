@@ -1,7 +1,7 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import HeroSection from '@/components/HeroSection';
-import FeaturedPackages from '@/components/FeaturedPackages';
+import FeaturedProducts from '@/components/FeaturedProducts';
 import ServicesSection from '@/components/ServicesSection';
 import StatsSection from '@/components/StatsSection';
 import CTASection from '@/components/CTASection';
@@ -12,7 +12,7 @@ export default function Index() {
       <Header />
       <main>
         <HeroSection />
-        <FeaturedPackages />
+        <FeaturedProducts />
         <StatsSection />
         <ServicesSection />
         <CTASection />

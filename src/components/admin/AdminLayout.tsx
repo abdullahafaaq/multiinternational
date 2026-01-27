@@ -6,7 +6,7 @@ import {
   Briefcase, 
   Settings, 
   MessageSquare,
-  Compass,
+  Globe,
   LogOut,
   Menu,
   X
@@ -16,7 +16,7 @@ import { useAuth } from '@/contexts/AuthContext';
 
 const navItems = [
   { path: '/admin', label: 'Dashboard', icon: LayoutDashboard },
-  { path: '/admin/packages', label: 'Packages', icon: Package },
+  { path: '/admin/products', label: 'Products', icon: Package },
   { path: '/admin/services', label: 'Services', icon: Briefcase },
   { path: '/admin/inquiries', label: 'Inquiries', icon: MessageSquare },
   { path: '/admin/settings', label: 'Settings', icon: Settings },
@@ -70,7 +70,7 @@ export default function AdminLayout() {
         </button>
         <div className="flex items-center gap-2 ml-4">
           <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-            <Compass className="w-5 h-5 text-primary-foreground" />
+            <Globe className="w-5 h-5 text-primary-foreground" />
           </div>
           <span className="font-serif font-semibold">Admin Panel</span>
         </div>
@@ -86,11 +86,11 @@ export default function AdminLayout() {
         <div className="h-16 flex items-center px-6 border-b border-border">
           <Link to="/" className="flex items-center gap-2">
             <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
-              <Compass className="w-6 h-6 text-primary-foreground" />
+              <Globe className="w-6 h-6 text-primary-foreground" />
             </div>
             <div>
               <span className="font-serif font-semibold text-foreground block leading-tight">
-                Multi Travel
+                Multi International
               </span>
               <span className="text-xs text-muted-foreground">Admin Panel</span>
             </div>

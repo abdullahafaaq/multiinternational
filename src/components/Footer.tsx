@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Mail, Phone, MapPin, Facebook, Instagram, Twitter, Youtube } from 'lucide-react';
+import { Mail, Phone, MapPin, Facebook, Linkedin, Twitter } from 'lucide-react';
 import { useSite } from '@/contexts/SiteContext';
 import logo from '@/assets/logo.png';
 
@@ -15,25 +15,22 @@ export default function Footer() {
             <Link to="/">
               <img 
                 src={logo} 
-                alt="Multi Travels" 
+                alt="Multi International" 
                 className="h-10 w-auto brightness-0 invert"
               />
             </Link>
             <p className="text-primary-foreground/70 text-sm leading-relaxed">
-              {settings.tagline}. Creating unforgettable travel experiences since 2010.
+              {settings.tagline}. Facilitating global trade since 2010.
             </p>
             <div className="flex gap-4">
               <a href="#" className="text-primary-foreground/60 hover:text-accent transition-colors">
                 <Facebook className="w-5 h-5" />
               </a>
               <a href="#" className="text-primary-foreground/60 hover:text-accent transition-colors">
-                <Instagram className="w-5 h-5" />
+                <Linkedin className="w-5 h-5" />
               </a>
               <a href="#" className="text-primary-foreground/60 hover:text-accent transition-colors">
                 <Twitter className="w-5 h-5" />
-              </a>
-              <a href="#" className="text-primary-foreground/60 hover:text-accent transition-colors">
-                <Youtube className="w-5 h-5" />
               </a>
             </div>
           </div>
@@ -42,7 +39,7 @@ export default function Footer() {
           <div>
             <h3 className="font-serif text-lg font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-3">
-              {['Home', 'Packages', 'Services', 'About', 'Contact'].map((link) => (
+              {['Home', 'Products', 'Services', 'About', 'Contact'].map((link) => (
                 <li key={link}>
                   <Link 
                     to={link === 'Home' ? '/' : `/${link.toLowerCase()}`}
@@ -55,17 +52,17 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Popular Destinations */}
+          {/* Trade Regions */}
           <div>
-            <h3 className="font-serif text-lg font-semibold mb-4">Popular Destinations</h3>
+            <h3 className="font-serif text-lg font-semibold mb-4">Trade Regions</h3>
             <ul className="space-y-3">
-              {['Maldives', 'Greece', 'Switzerland', 'Bali', 'Dubai', 'Peru'].map((dest) => (
-                <li key={dest}>
+              {['Asia Pacific', 'Europe', 'North America', 'Middle East', 'Africa', 'South America'].map((region) => (
+                <li key={region}>
                   <Link 
-                    to="/packages"
+                    to="/products"
                     className="text-primary-foreground/70 hover:text-accent transition-colors text-sm"
                   >
-                    {dest}
+                    {region}
                   </Link>
                 </li>
               ))}
@@ -100,7 +97,7 @@ export default function Footer() {
 
         <div className="border-t border-primary-foreground/10 mt-12 pt-8 text-center">
           <p className="text-primary-foreground/50 text-sm">
-            © {new Date().getFullYear()} Multi Travels. All rights reserved.
+            © {new Date().getFullYear()} Multi International. All rights reserved.
           </p>
         </div>
       </div>

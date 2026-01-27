@@ -1,10 +1,10 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import PackageCard from '@/components/PackageCard';
+import ProductCard from '@/components/ProductCard';
 import { useSite } from '@/contexts/SiteContext';
 
-export default function Packages() {
-  const { packages } = useSite();
+export default function Products() {
+  const { products } = useSite();
 
   return (
     <div className="min-h-screen">
@@ -14,30 +14,30 @@ export default function Packages() {
         <section className="py-24 bg-primary">
           <div className="container mx-auto px-4 text-center">
             <p className="text-accent font-medium mb-2 tracking-wider uppercase text-sm">
-              Explore Destinations
+              Our Catalog
             </p>
             <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6">
-              Travel Packages
+              Products
             </h1>
             <p className="text-primary-foreground/80 max-w-2xl mx-auto text-lg">
-              Discover our carefully curated collection of travel experiences, designed to create memories that last a lifetime.
+              Explore our comprehensive range of quality products sourced from trusted suppliers across the globe.
             </p>
           </div>
         </section>
 
-        {/* Packages Grid */}
+        {/* Products Grid */}
         <section className="py-24 bg-background">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {packages.map((pkg) => (
-                <PackageCard key={pkg.id} pkg={pkg} />
+              {products.map((product) => (
+                <ProductCard key={product.id} product={product} />
               ))}
             </div>
             
-            {packages.length === 0 && (
+            {products.length === 0 && (
               <div className="text-center py-16">
                 <p className="text-muted-foreground text-lg">
-                  No packages available at the moment. Please check back later!
+                  No products available at the moment. Please check back later!
                 </p>
               </div>
             )}

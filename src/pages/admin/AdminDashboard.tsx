@@ -3,14 +3,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useSite } from '@/contexts/SiteContext';
 
 export default function AdminDashboard() {
-  const { packages, services, inquiries } = useSite();
+  const { products, services, inquiries } = useSite();
   
   const newInquiries = inquiries.filter(i => i.status === 'new').length;
 
   const stats = [
     {
-      title: 'Total Packages',
-      value: packages.length,
+      title: 'Total Products',
+      value: products.length,
       icon: Package,
       color: 'bg-primary/10 text-primary'
     },
@@ -38,7 +38,7 @@ export default function AdminDashboard() {
     <div className="space-y-8">
       <div>
         <h1 className="font-serif text-3xl font-bold text-foreground mb-2">Dashboard</h1>
-        <p className="text-muted-foreground">Welcome to the Multi Travel admin panel.</p>
+        <p className="text-muted-foreground">Welcome to the Multi International admin panel.</p>
       </div>
 
       {/* Stats Grid */}
