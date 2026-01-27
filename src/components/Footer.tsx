@@ -16,7 +16,7 @@ export default function Footer() {
             <img 
               src={logo} 
               alt="Multi International" 
-              className="h-14 w-auto"
+              className="h-20 w-auto"
             />
             </Link>
             <p className="text-primary-foreground/70 text-sm leading-relaxed">
