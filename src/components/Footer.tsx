@@ -2,9 +2,12 @@ import { Link } from 'react-router-dom';
 import { Mail, Phone, MapPin, Facebook, Linkedin, Twitter } from 'lucide-react';
 import { useSite } from '@/contexts/SiteContext';
 import logo from '@/assets/logo-white.png';
+import { hasRichTextContent, richTextToPlainText, sanitizeRichText } from '@/lib/richText';
 
 export default function Footer() {
   const { settings } = useSite();
+  const emailHref = richTextToPlainText(settings.email);
+  const phoneHref = richTextToPlainText(settings.phone);
   
   return (
     <footer className="bg-foreground text-primary-foreground">
@@ -20,7 +23,7 @@ export default function Footer() {
             />
             </Link>
             <p className="text-primary-foreground/70 text-sm leading-relaxed">
-              {settings.tagline}. Facilitating global trade since 2010.
+              <span dangerouslySetInnerHTML={{ __html: sanitizeRichText(settings.tagline) }} />. Facilitating global trade since 2010.
             </p>
             <div className="flex gap-4">
               <a href="#" className="text-primary-foreground/60 hover:text-accent transition-colors">
@@ -75,21 +78,27 @@ export default function Footer() {
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
                 <Mail className="w-5 h-5 text-accent mt-0.5" />
-                <a href={`mailto:${settings.email}`} className="text-primary-foreground/70 hover:text-accent transition-colors text-sm">
-                  {settings.email}
+                <a href={`mailto:${emailHref}`} className="text-primary-foreground/70 hover:text-accent transition-colors text-sm">
+                  <span dangerouslySetInnerHTML={{ __html: sanitizeRichText(settings.email) }} />
                 </a>
               </li>
               <li className="flex items-start gap-3">
                 <Phone className="w-5 h-5 text-accent mt-0.5" />
-                <a href={`tel:${settings.phone}`} className="text-primary-foreground/70 hover:text-accent transition-colors text-sm">
-                  {settings.phone}
+                <a href={`tel:${phoneHref}`} className="text-primary-foreground/70 hover:text-accent transition-colors text-sm">
+                  <span dangerouslySetInnerHTML={{ __html: sanitizeRichText(settings.phone) }} />
                 </a>
               </li>
-              <li className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-accent mt-0.5" />
-                <span className="text-primary-foreground/70 text-sm">
-                  {settings.address}
-                </span>
+              <li className="space-y-2">
+                <div className="flex items-start gap-3">
+                  <MapPin className="w-5 h-5 text-accent mt-0.5" />
+                  <p className="text-primary-foreground/70 text-sm" dangerouslySetInnerHTML={{ __html: sanitizeRichText(settings.address) }} />
+                </div>
+                {hasRichTextContent(settings.address2) && (
+                  <div className="flex items-start gap-3">
+                    <MapPin className="w-5 h-5 text-accent mt-0.5" />
+                    <p className="text-primary-foreground/70 text-sm" dangerouslySetInnerHTML={{ __html: sanitizeRichText(settings.address2) }} />
+                  </div>
+                )}
               </li>
             </ul>
           </div>

@@ -31,7 +31,7 @@ const SiteContext = createContext<SiteContextType | undefined>(undefined);
 export function SiteProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<SiteSettings>(() => {
     const saved = localStorage.getItem('multiinternational_settings');
-    return saved ? JSON.parse(saved) : defaultSiteSettings;
+    return saved ? { ...defaultSiteSettings, ...JSON.parse(saved) } : defaultSiteSettings;
   });
 
   const [products, setProducts] = useState<Product[]>(() => {

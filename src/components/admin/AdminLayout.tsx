@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
+import logo from '@/assets/logo.png';
 
 const navItems = [
   { path: '/admin', label: 'Dashboard', icon: LayoutDashboard },
@@ -69,10 +70,11 @@ export default function AdminLayout() {
           {isSidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
         <div className="flex items-center gap-2 ml-4">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-            <Globe className="w-5 h-5 text-primary-foreground" />
-          </div>
-          <span className="font-serif font-semibold">Admin Panel</span>
+          <img
+            src={logo}
+            alt="Multi International"
+            className="h-9 w-auto"
+          />
         </div>
       </header>
 
@@ -84,16 +86,12 @@ export default function AdminLayout() {
       `}>
         {/* Logo */}
         <div className="h-16 flex items-center px-6 border-b border-border">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
-              <Globe className="w-6 h-6 text-primary-foreground" />
-            </div>
-            <div>
-              <span className="font-serif font-semibold text-foreground block leading-tight">
-                Multi International
-              </span>
-              <span className="text-xs text-muted-foreground">Admin Panel</span>
-            </div>
+          <Link to="/" className="flex items-center">
+            <img
+              src={logo}
+              alt="Multi International"
+              className="h-10 w-auto"
+            />
           </Link>
         </div>
 

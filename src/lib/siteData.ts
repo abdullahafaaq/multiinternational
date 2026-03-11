@@ -1,12 +1,26 @@
 // Site configuration - this will be managed through admin panel
+export interface HeroSlide {
+  id: string;
+  badge: string;
+  title: string;
+  subtitle: string;
+  backgroundImage: string;
+  primaryCtaLabel: string;
+  primaryCtaPath: string;
+  secondaryCtaLabel: string;
+  secondaryCtaPath: string;
+}
+
 export interface SiteSettings {
   siteName: string;
   tagline: string;
   heroTitle: string;
   heroSubtitle: string;
+  heroSlides: HeroSlide[];
   email: string;
   phone: string;
   address: string;
+  address2: string;
   aboutText: string;
 }
 
@@ -48,9 +62,34 @@ export const defaultSiteSettings: SiteSettings = {
   tagline: "Your Global Trade Partner",
   heroTitle: "Connecting Businesses Worldwide",
   heroSubtitle: "We specialize in premium quality imports and exports, connecting businesses across continents with reliable supply chains and competitive pricing.",
+  heroSlides: [
+    {
+      id: "slide-1",
+      badge: "Your Global Trade Partner",
+      title: "Connecting Businesses Worldwide",
+      subtitle: "We specialize in premium quality imports and exports, connecting businesses across continents with reliable supply chains and competitive pricing.",
+      backgroundImage: "https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?w=1920",
+      primaryCtaLabel: "View Products",
+      primaryCtaPath: "/products",
+      secondaryCtaLabel: "Learn About Us",
+      secondaryCtaPath: "/about"
+    },
+    {
+      id: "slide-2",
+      badge: "Reliable Import & Export",
+      title: "Quality Products, Global Reach",
+      subtitle: "From sourcing to delivery, our team ensures smooth cross-border trade operations tailored to your business goals.",
+      backgroundImage: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1920",
+      primaryCtaLabel: "Our Services",
+      primaryCtaPath: "/services",
+      secondaryCtaLabel: "Contact Us",
+      secondaryCtaPath: "/contact"
+    }
+  ],
   email: "info@multiinternational.asia",
   phone: "+92 331 9056666 | 042 3755 3030",
   address: "UG-21, Lucky Center, 7-8 Jail Road, Lahore, Pakistan",
+  address2: "",
   aboutText: "Multi International has been facilitating global trade for over 15 years. Under the leadership of Chief Executive IKRAM UL HAQ, our team of trade experts combines market knowledge with international experience to deliver quality products and reliable partnerships that exceed expectations."
 };
 

@@ -2,12 +2,22 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import { RichTextEditor } from '@/components/ui/rich-text-editor';
 import { useSite } from '@/contexts/SiteContext';
 import { toast } from 'sonner';
 import { useState, useEffect } from 'react';
-import { Lock, Eye, EyeOff } from 'lucide-react';
+import { Lock, Eye, EyeOff, Plus, Trash2 } from 'lucide-react';
 import { getAdminPassword, setAdminPassword } from '@/lib/auth';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import type { HeroSlide } from '@/lib/siteData';
+
+const CTA_ROUTE_OPTIONS = [
+  { value: 'none', label: 'No button' },
+  { value: '/products', label: 'Products page' },
+  { value: '/services', label: 'Services page' },
+  { value: '/about', label: 'About page' },
+  { value: '/contact', label: 'Contact page' },
+];
 
 export default function AdminSettings() {
   const { settings, updateSettings } = useSite();
@@ -23,6 +33,46 @@ export default function AdminSettings() {
   useEffect(() => {
     setFormData(settings);
   }, [settings]);
+
+  const handleSlideChange = <K extends keyof HeroSlide>(slideId: string, key: K, value: HeroSlide[K]) => {
+    setFormData(prev => ({
+      ...prev,
+      heroSlides: prev.heroSlides.map(slide =>
+        slide.id === slideId ? { ...slide, [key]: value } : slide
+      ),
+    }));
+  };
+
+  const handleAddSlide = () => {
+    const newSlide: HeroSlide = {
+      id: `slide-${Date.now()}`,
+      badge: 'New Slide',
+      title: 'New Hero Title',
+      subtitle: 'Add your slide description here.',
+      backgroundImage: 'https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?w=1920',
+      primaryCtaLabel: 'View Products',
+      primaryCtaPath: '/products',
+      secondaryCtaLabel: 'Contact Us',
+      secondaryCtaPath: '/contact',
+    };
+
+    setFormData(prev => ({
+      ...prev,
+      heroSlides: [...prev.heroSlides, newSlide],
+    }));
+  };
+
+  const handleDeleteSlide = (slideId: string) => {
+    if (formData.heroSlides.length <= 1) {
+      toast.error('At least one hero slide is required.');
+      return;
+    }
+
+    setFormData(prev => ({
+      ...prev,
+      heroSlides: prev.heroSlides.filter(slide => slide.id !== slideId),
+    }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,40 +123,135 @@ export default function AdminSettings() {
             <CardTitle className="font-serif">Branding</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="tagline">Tagline</Label>
-              <Input
-                id="tagline"
-                value={formData.tagline}
-                onChange={(e) => setFormData(prev => ({ ...prev, tagline: e.target.value }))}
-              />
-            </div>
+            <RichTextEditor
+              id="tagline"
+              label="Tagline"
+              value={formData.tagline}
+              placeholder="Enter tagline"
+              onChange={(value) => setFormData(prev => ({ ...prev, tagline: value }))}
+            />
           </CardContent>
         </Card>
 
         {/* Hero Section */}
         <Card>
           <CardHeader>
-            <CardTitle className="font-serif">Hero Section</CardTitle>
+            <CardTitle className="font-serif">Hero Slider</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="heroTitle">Hero Title</Label>
-              <Input
-                id="heroTitle"
-                value={formData.heroTitle}
-                onChange={(e) => setFormData(prev => ({ ...prev, heroTitle: e.target.value }))}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="heroSubtitle">Hero Subtitle</Label>
-              <Textarea
-                id="heroSubtitle"
-                value={formData.heroSubtitle}
-                onChange={(e) => setFormData(prev => ({ ...prev, heroSubtitle: e.target.value }))}
-                rows={3}
-              />
-            </div>
+            {formData.heroSlides.map((slide, index) => (
+              <div key={slide.id} className="rounded-lg border border-border p-4 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-foreground">Slide {index + 1}</h3>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => handleDeleteSlide(slide.id)}
+                  >
+                    <Trash2 className="w-4 h-4 mr-1" />
+                    Remove
+                  </Button>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor={`background-${slide.id}`}>Background Image URL</Label>
+                  <Input
+                    id={`background-${slide.id}`}
+                    value={slide.backgroundImage}
+                    onChange={(e) => handleSlideChange(slide.id, 'backgroundImage', e.target.value)}
+                    placeholder="https://..."
+                  />
+                </div>
+
+                <RichTextEditor
+                  id={`badge-${slide.id}`}
+                  label="Badge"
+                  value={slide.badge}
+                  placeholder="Enter top badge text"
+                  onChange={(value) => handleSlideChange(slide.id, 'badge', value)}
+                />
+
+                <RichTextEditor
+                  id={`title-${slide.id}`}
+                  label="Title"
+                  value={slide.title}
+                  placeholder="Enter hero title"
+                  onChange={(value) => handleSlideChange(slide.id, 'title', value)}
+                />
+
+                <RichTextEditor
+                  id={`subtitle-${slide.id}`}
+                  label="Subtitle"
+                  value={slide.subtitle}
+                  placeholder="Enter hero subtitle"
+                  onChange={(value) => handleSlideChange(slide.id, 'subtitle', value)}
+                />
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Primary CTA Destination</Label>
+                    <Select
+                      value={slide.primaryCtaPath || 'none'}
+                      onValueChange={(value) => handleSlideChange(slide.id, 'primaryCtaPath', value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select destination" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {CTA_ROUTE_OPTIONS.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <RichTextEditor
+                    id={`primary-label-${slide.id}`}
+                    label="Primary CTA Label"
+                    value={slide.primaryCtaLabel}
+                    placeholder="e.g. View Products"
+                    onChange={(value) => handleSlideChange(slide.id, 'primaryCtaLabel', value)}
+                  />
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Secondary CTA Destination</Label>
+                    <Select
+                      value={slide.secondaryCtaPath || 'none'}
+                      onValueChange={(value) => handleSlideChange(slide.id, 'secondaryCtaPath', value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select destination" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {CTA_ROUTE_OPTIONS.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <RichTextEditor
+                    id={`secondary-label-${slide.id}`}
+                    label="Secondary CTA Label"
+                    value={slide.secondaryCtaLabel}
+                    placeholder="e.g. Contact Us"
+                    onChange={(value) => handleSlideChange(slide.id, 'secondaryCtaLabel', value)}
+                  />
+                </div>
+              </div>
+            ))}
+
+            <Button type="button" variant="secondary" onClick={handleAddSlide}>
+              <Plus className="w-4 h-4 mr-2" />
+              Add Slide
+            </Button>
           </CardContent>
         </Card>
 
@@ -117,32 +262,35 @@ export default function AdminSettings() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="phone">Phone</Label>
-                <Input
-                  id="phone"
-                  value={formData.phone}
-                  onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="address">Address</Label>
-              <Input
-                id="address"
-                value={formData.address}
-                onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
+              <RichTextEditor
+                id="email"
+                label="Email"
+                value={formData.email}
+                placeholder="Enter email"
+                onChange={(value) => setFormData(prev => ({ ...prev, email: value }))}
+              />
+              <RichTextEditor
+                id="phone"
+                label="Phone"
+                value={formData.phone}
+                placeholder="Enter phone"
+                onChange={(value) => setFormData(prev => ({ ...prev, phone: value }))}
               />
             </div>
+            <RichTextEditor
+              id="address"
+              label="Address"
+              value={formData.address}
+              placeholder="Enter address"
+              onChange={(value) => setFormData(prev => ({ ...prev, address: value }))}
+            />
+            <RichTextEditor
+              id="address2"
+              label="Address 2"
+              value={formData.address2}
+              placeholder="Enter second address"
+              onChange={(value) => setFormData(prev => ({ ...prev, address2: value }))}
+            />
           </CardContent>
         </Card>
 
@@ -152,15 +300,13 @@ export default function AdminSettings() {
             <CardTitle className="font-serif">About Section</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
-              <Label htmlFor="aboutText">About Text</Label>
-              <Textarea
-                id="aboutText"
-                value={formData.aboutText}
-                onChange={(e) => setFormData(prev => ({ ...prev, aboutText: e.target.value }))}
-                rows={4}
-              />
-            </div>
+            <RichTextEditor
+              id="aboutText"
+              label="About Text"
+              value={formData.aboutText}
+              placeholder="Enter about section text"
+              onChange={(value) => setFormData(prev => ({ ...prev, aboutText: value }))}
+            />
           </CardContent>
         </Card>
 

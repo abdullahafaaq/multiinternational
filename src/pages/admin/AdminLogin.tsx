@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Compass, Lock, Eye, EyeOff } from 'lucide-react';
+import { Lock, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
+import logo from '@/assets/logo.png';
 
 export default function AdminLogin() {
   const [password, setPassword] = useState('');
@@ -39,9 +40,11 @@ export default function AdminLogin() {
       <div className="w-full max-w-md">
         {/* Logo & Title */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary mb-4">
-            <Compass className="w-8 h-8 text-primary-foreground" />
-          </div>
+          <img
+            src={logo}
+            alt="Multi International"
+            className="h-16 md:h-20 w-auto mx-auto mb-4"
+          />
           <h1 className="font-serif text-2xl font-bold text-foreground">
             Admin Panel
           </h1>

@@ -10,10 +10,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useSite } from '@/contexts/SiteContext';
 import { toast } from 'sonner';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
+import { hasRichTextContent, richTextToPlainText, sanitizeRichText } from '@/lib/richText';
 
 export default function Contact() {
   const [searchParams] = useSearchParams();
   const { settings, products, addInquiry } = useSite();
+  const emailHref = richTextToPlainText(settings.email);
+  const phoneHref = richTextToPlainText(settings.phone);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -79,8 +82,8 @@ export default function Contact() {
                       </div>
                       <div>
                         <p className="font-medium text-foreground">Email</p>
-                        <a href={`mailto:${settings.email}`} className="text-muted-foreground hover:text-primary transition-colors">
-                          {settings.email}
+                        <a href={`mailto:${emailHref}`} className="text-muted-foreground hover:text-primary transition-colors">
+                          <span dangerouslySetInnerHTML={{ __html: sanitizeRichText(settings.email) }} />
                         </a>
                       </div>
                     </div>
@@ -90,8 +93,8 @@ export default function Contact() {
                       </div>
                       <div>
                         <p className="font-medium text-foreground">Phone</p>
-                        <a href={`tel:${settings.phone}`} className="text-muted-foreground hover:text-primary transition-colors">
-                          {settings.phone}
+                        <a href={`tel:${phoneHref}`} className="text-muted-foreground hover:text-primary transition-colors">
+                          <span dangerouslySetInnerHTML={{ __html: sanitizeRichText(settings.phone) }} />
                         </a>
                       </div>
                     </div>
@@ -101,9 +104,18 @@ export default function Contact() {
                       </div>
                       <div>
                         <p className="font-medium text-foreground">Address</p>
-                        <p className="text-muted-foreground">
-                          {settings.address}
-                        </p>
+                        <div className="text-muted-foreground space-y-2 mt-1">
+                          <div className="flex items-start gap-2">
+                            <MapPin className="w-4 h-4 text-primary mt-0.5" />
+                            <p dangerouslySetInnerHTML={{ __html: sanitizeRichText(settings.address) }} />
+                          </div>
+                          {hasRichTextContent(settings.address2) && (
+                            <div className="flex items-start gap-2">
+                              <MapPin className="w-4 h-4 text-primary mt-0.5" />
+                              <p dangerouslySetInnerHTML={{ __html: sanitizeRichText(settings.address2) }} />
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>

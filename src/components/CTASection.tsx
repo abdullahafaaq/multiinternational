@@ -29,7 +29,7 @@ export default function CTASection() {
               </Button>
             </Link>
             <Link to="/products">
-              <Button size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 w-full sm:w-auto">
+              <Button size="lg" variant="outline" className="border-primary-foreground/30 bg-background text-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground w-full sm:w-auto">
                 Browse Products
               </Button>
             </Link>

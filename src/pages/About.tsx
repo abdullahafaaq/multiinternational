@@ -3,6 +3,7 @@ import Footer from '@/components/Footer';
 import CTASection from '@/components/CTASection';
 import { useSite } from '@/contexts/SiteContext';
 import { Award, Globe, Users, Shield } from 'lucide-react';
+import { sanitizeRichText } from '@/lib/richText';
 
 const values = [
   {
@@ -44,7 +45,7 @@ export default function About() {
               About {settings.siteName}
             </h1>
             <p className="text-primary-foreground/80 max-w-2xl mx-auto text-lg">
-              {settings.aboutText}
+              <span dangerouslySetInnerHTML={{ __html: sanitizeRichText(settings.aboutText) }} />
             </p>
           </div>
         </section>
