@@ -23,7 +23,7 @@ export default function AdminLogin() {
     // Simulate slight delay for better UX
     await new Promise(resolve => setTimeout(resolve, 300));
 
-    const success = login(password);
+    const success = await login(password);
     
     if (success) {
       navigate('/admin', { replace: true });

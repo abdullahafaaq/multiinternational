@@ -11,18 +11,76 @@ export interface HeroSlide {
   secondaryCtaPath: string;
 }
 
+export interface TeamMember {
+  id: string;
+  name: string;
+  title: string;
+  image: string;
+}
+
+export interface Testimonial {
+  id: string;
+  name: string;
+  role: string;
+  content: string;
+}
+
 export interface SiteSettings {
   siteName: string;
   tagline: string;
   heroTitle: string;
   heroSubtitle: string;
   heroSlides: HeroSlide[];
+  productCategories: string[];
   email: string;
   phone: string;
   address: string;
   address2: string;
   aboutText: string;
+  footerDescription: string;
+  footerQuickLinksTitle: string;
+  footerRegionsTitle: string;
+  footerRegions: string[];
+  footerCopyright: string;
+  footerWebsite: string;
+  facebookUrl: string;
+  linkedinUrl: string;
+  twitterUrl: string;
+  teamMembers: TeamMember[];
+  testimonials?: Testimonial[];
 }
+
+export const defaultProductCategories = [
+  "Agricultural Products",
+  "Industrial Machinery",
+  "Textiles & Garments",
+  "Chemicals",
+  "Electronics",
+  "Raw Materials",
+  "Consumer Goods",
+  "Other"
+];
+
+export const defaultTeamMembers: TeamMember[] = [
+  {
+    id: "team-1",
+    name: "Ikram Ul Haq",
+    title: "CEO",
+    image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=700&q=80"
+  },
+  {
+    id: "team-2",
+    name: "Lara Smith",
+    title: "CTO",
+    image: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=700&q=80"
+  },
+  {
+    id: "team-3",
+    name: "John Doe",
+    title: "COO",
+    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=700&q=80"
+  }
+];
 
 export interface Product {
   id: string;
@@ -43,6 +101,17 @@ export interface Service {
   name: string;
   description: string;
   icon: string;
+  image: string;
+  featured: boolean;
+}
+
+export interface Certificate {
+  id: string;
+  name: string;
+  issuer: string;
+  description: string;
+  image: string;
+  featured: boolean;
 }
 
 export interface Inquiry {
@@ -86,11 +155,48 @@ export const defaultSiteSettings: SiteSettings = {
       secondaryCtaPath: "/contact"
     }
   ],
+  productCategories: defaultProductCategories,
   email: "info@multiinternational.asia",
   phone: "+92 331 9056666 | 042 3755 3030",
   address: "UG-21, Lucky Center, 7-8 Jail Road, Lahore, Pakistan",
   address2: "",
-  aboutText: "Multi International has been facilitating global trade for over 15 years. Under the leadership of Chief Executive IKRAM UL HAQ, our team of trade experts combines market knowledge with international experience to deliver quality products and reliable partnerships that exceed expectations."
+  aboutText: "Multi International has been facilitating global trade for over 15 years. Under the leadership of Chief Executive IKRAM UL HAQ, our team of trade experts combines market knowledge with international experience to deliver quality products and reliable partnerships that exceed expectations.",
+  footerDescription: "Your Global Trade Partner. Facilitating global trade since 2010.",
+  footerQuickLinksTitle: "Quick Links",
+  footerRegionsTitle: "Trade Regions",
+  footerRegions: ["Asia Pacific", "Europe", "North America", "Middle East", "Africa", "South America"],
+  footerCopyright: "Multi International (Pvt). Ltd. All rights reserved.",
+  footerWebsite: "www.multiinternational.asia",
+  facebookUrl: "",
+  linkedinUrl: "",
+  twitterUrl: "",
+  teamMembers: defaultTeamMembers,
+  testimonials: [
+    {
+      id: "testimonial-1",
+      name: "Alice Howard",
+      role: "Engineering Manager",
+      content: "Outstanding service and attention to detail. Multi International transformed how we manage our supply chain globally. Highly recommended!"
+    },
+    {
+      id: "testimonial-2",
+      name: "Nathan Marshall",
+      role: "Interior Designer",
+      content: "Working with Multi International has been seamless. Their expertise in international logistics is unmatched. A truly professional team!"
+    },
+    {
+      id: "testimonial-3",
+      name: "Emma Romero",
+      role: "Architect",
+      content: "Excellent communication and reliable delivery. Multi International has become our trusted partner for all import-export needs."
+    },
+    {
+      id: "testimonial-4",
+      name: "Ann Smith",
+      role: "Manager",
+      content: "From product sourcing to customs clearance, they handle everything with professionalism. Highly satisfied with their services!"
+    }
+  ]
 };
 
 // Default products
@@ -181,36 +287,48 @@ export const defaultServices: Service[] = [
     id: "1",
     name: "Import/Export Consulting",
     description: "Expert guidance on international trade regulations, tariffs, and market entry strategies.",
-    icon: "globe"
+    icon: "map",
+    image: "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=700&q=80",
+    featured: true
   },
   {
     id: "2",
     name: "Customs Clearance",
     description: "Streamlined customs documentation and clearance services for hassle-free imports and exports.",
-    icon: "file-check"
+    icon: "file-text",
+    image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=700&q=80",
+    featured: true
   },
   {
     id: "3",
     name: "Freight Forwarding",
     description: "Comprehensive logistics solutions including sea, air, and land freight at competitive rates.",
-    icon: "ship"
+    icon: "plane",
+    image: "https://images.unsplash.com/photo-1578575437534-1e857aab928e?auto=format&fit=crop&w=700&q=80",
+    featured: true
   },
   {
     id: "4",
     name: "Quality Inspection",
     description: "Pre-shipment and on-site quality inspections to ensure products meet your specifications.",
-    icon: "search-check"
+    icon: "shield",
+    image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=700&q=80",
+    featured: false
   },
   {
     id: "5",
     name: "Trade Documentation",
     description: "Complete documentation services including letters of credit, bills of lading, and certificates.",
-    icon: "file-text"
+    icon: "file-text",
+    image: "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=700&q=80",
+    featured: false
   },
   {
     id: "6",
     name: "Supply Chain Management",
     description: "End-to-end supply chain optimization for efficient and cost-effective operations.",
-    icon: "network"
+    icon: "users",
+    image: "https://images.unsplash.com/photo-1578575437534-1e857aab928e?auto=format&fit=crop&w=700&q=80",
+    featured: false
   }
 ];

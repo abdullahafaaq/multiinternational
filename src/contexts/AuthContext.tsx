@@ -11,7 +11,7 @@ import {
 interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (password: string) => boolean;
+  login: (password: string) => Promise<boolean>;
   logout: () => void;
 }
 
@@ -29,8 +29,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(false);
   }, []);
 
-  const login = (password: string): boolean => {
-    if (verifyPassword(password)) {
+  const login = async (password: string): Promise<boolean> => {
+    if (await verifyPassword(password)) {
       const token = generateToken();
       saveToken(token);
       setIsAuthenticated(true);

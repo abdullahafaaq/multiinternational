@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Plus, Edit2, Trash2, Star, Upload, Link, Image } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,19 +10,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useSite } from '@/contexts/SiteContext';
-import { Product } from '@/lib/siteData';
+import { defaultProductCategories, Product } from '@/lib/siteData';
 import { toast } from 'sonner';
-
-const categoryOptions = [
-  'Agricultural Products',
-  'Industrial Machinery',
-  'Textiles & Garments',
-  'Chemicals',
-  'Electronics',
-  'Raw Materials',
-  'Consumer Goods',
-  'Other'
-];
 
 const presetImageOptions = [
   { value: 'rice', label: 'Rice/Grains' },
@@ -36,7 +25,8 @@ const presetImageOptions = [
 const isCustomUrl = (image: string) => image.startsWith('http') || image.startsWith('data:');
 
 export default function AdminProducts() {
-  const { products, addProduct, updateProduct, deleteProduct } = useSite();
+  const { settings, products, addProduct, updateProduct, deleteProduct } = useSite();
+  const categoryOptions = settings.productCategories?.length ? settings.productCategories : defaultProductCategories;
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [formData, setFormData] = useState({
@@ -55,10 +45,16 @@ export default function AdminProducts() {
   const [customImageUrl, setCustomImageUrl] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    if (!categoryOptions.includes(formData.category)) {
+      setFormData(prev => ({ ...prev, category: categoryOptions[0] || 'Other' }));
+    }
+  }, [categoryOptions, formData.category]);
+
   const resetForm = () => {
     setFormData({
       name: '',
-      category: 'Agricultural Products',
+      category: categoryOptions[0] || 'Other',
       origin: '',
       unit: 'Metric Ton',
       minOrderQuantity: '',

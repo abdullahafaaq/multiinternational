@@ -3,16 +3,22 @@ import {
   SiteSettings,
   Product,
   Service,
+  Certificate,
   Inquiry,
-  defaultSiteSettings,
-  defaultProducts,
-  defaultServices
 } from '@/lib/siteData';
+import {
+  clearLocalSiteDataCache,
+  loadSharedSiteData,
+  readLocalSiteData,
+  saveSharedSiteData,
+  SiteStoreData,
+} from '@/lib/siteStore';
 
 interface SiteContextType {
   settings: SiteSettings;
   products: Product[];
   services: Service[];
+  certificates: Certificate[];
   inquiries: Inquiry[];
   updateSettings: (settings: SiteSettings) => void;
   addProduct: (product: Omit<Product, 'id'>) => void;
@@ -21,6 +27,9 @@ interface SiteContextType {
   addService: (service: Omit<Service, 'id'>) => void;
   updateService: (service: Service) => void;
   deleteService: (id: string) => void;
+  addCertificate: (certificate: Omit<Certificate, 'id'>) => void;
+  updateCertificate: (certificate: Certificate) => void;
+  deleteCertificate: (id: string) => void;
   addInquiry: (inquiry: Omit<Inquiry, 'id' | 'createdAt' | 'status'>) => void;
   updateInquiryStatus: (id: string, status: Inquiry['status']) => void;
   deleteInquiry: (id: string) => void;
@@ -29,70 +38,80 @@ interface SiteContextType {
 const SiteContext = createContext<SiteContextType | undefined>(undefined);
 
 export function SiteProvider({ children }: { children: ReactNode }) {
-  const [settings, setSettings] = useState<SiteSettings>(() => {
-    const saved = localStorage.getItem('multiinternational_settings');
-    return saved ? { ...defaultSiteSettings, ...JSON.parse(saved) } : defaultSiteSettings;
-  });
+  const [siteData, setSiteData] = useState<SiteStoreData>(() => readLocalSiteData());
 
-  const [products, setProducts] = useState<Product[]>(() => {
-    const saved = localStorage.getItem('multiinternational_products');
-    return saved ? JSON.parse(saved) : defaultProducts;
-  });
-
-  const [services, setServices] = useState<Service[]>(() => {
-    const saved = localStorage.getItem('multiinternational_services');
-    return saved ? JSON.parse(saved) : defaultServices;
-  });
-
-  const [inquiries, setInquiries] = useState<Inquiry[]>(() => {
-    const saved = localStorage.getItem('multiinternational_inquiries');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const { settings, products, services, certificates, inquiries } = siteData;
 
   useEffect(() => {
-    localStorage.setItem('multiinternational_settings', JSON.stringify(settings));
-  }, [settings]);
+    let mounted = true;
 
-  useEffect(() => {
-    localStorage.setItem('multiinternational_products', JSON.stringify(products));
-  }, [products]);
+    loadSharedSiteData().then((sharedData) => {
+      if (!mounted || !sharedData) return;
 
-  useEffect(() => {
-    localStorage.setItem('multiinternational_services', JSON.stringify(services));
-  }, [services]);
+      setSiteData(sharedData);
+      clearLocalSiteDataCache();
+    });
 
-  useEffect(() => {
-    localStorage.setItem('multiinternational_inquiries', JSON.stringify(inquiries));
-  }, [inquiries]);
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const commitSiteData = (nextData: SiteStoreData) => {
+    setSiteData(nextData);
+    saveSharedSiteData(nextData);
+  };
 
   const updateSettings = (newSettings: SiteSettings) => {
-    setSettings(newSettings);
+    commitSiteData({ ...siteData, settings: newSettings });
   };
 
   const addProduct = (product: Omit<Product, 'id'>) => {
     const newProduct = { ...product, id: Date.now().toString() };
-    setProducts(prev => [...prev, newProduct]);
+    commitSiteData({ ...siteData, products: [...products, newProduct] });
   };
 
   const updateProduct = (product: Product) => {
-    setProducts(prev => prev.map(p => p.id === product.id ? product : p));
+    commitSiteData({
+      ...siteData,
+      products: products.map(p => p.id === product.id ? product : p),
+    });
   };
 
   const deleteProduct = (id: string) => {
-    setProducts(prev => prev.filter(p => p.id !== id));
+    commitSiteData({ ...siteData, products: products.filter(p => p.id !== id) });
   };
 
   const addService = (service: Omit<Service, 'id'>) => {
     const newService = { ...service, id: Date.now().toString() };
-    setServices(prev => [...prev, newService]);
+    commitSiteData({ ...siteData, services: [...services, newService] });
   };
 
   const updateService = (service: Service) => {
-    setServices(prev => prev.map(s => s.id === service.id ? service : s));
+    commitSiteData({
+      ...siteData,
+      services: services.map(s => s.id === service.id ? service : s),
+    });
   };
 
   const deleteService = (id: string) => {
-    setServices(prev => prev.filter(s => s.id !== id));
+    commitSiteData({ ...siteData, services: services.filter(s => s.id !== id) });
+  };
+
+  const addCertificate = (certificate: Omit<Certificate, 'id'>) => {
+    const newCertificate = { ...certificate, id: Date.now().toString() };
+    commitSiteData({ ...siteData, certificates: [...certificates, newCertificate] });
+  };
+
+  const updateCertificate = (certificate: Certificate) => {
+    commitSiteData({
+      ...siteData,
+      certificates: certificates.map(c => c.id === certificate.id ? certificate : c),
+    });
+  };
+
+  const deleteCertificate = (id: string) => {
+    commitSiteData({ ...siteData, certificates: certificates.filter(c => c.id !== id) });
   };
 
   const addInquiry = (inquiry: Omit<Inquiry, 'id' | 'createdAt' | 'status'>) => {
@@ -102,15 +121,18 @@ export function SiteProvider({ children }: { children: ReactNode }) {
       createdAt: new Date().toISOString(),
       status: 'new'
     };
-    setInquiries(prev => [newInquiry, ...prev]);
+    commitSiteData({ ...siteData, inquiries: [newInquiry, ...inquiries] });
   };
 
   const updateInquiryStatus = (id: string, status: Inquiry['status']) => {
-    setInquiries(prev => prev.map(i => i.id === id ? { ...i, status } : i));
+    commitSiteData({
+      ...siteData,
+      inquiries: inquiries.map(i => i.id === id ? { ...i, status } : i),
+    });
   };
 
   const deleteInquiry = (id: string) => {
-    setInquiries(prev => prev.filter(i => i.id !== id));
+    commitSiteData({ ...siteData, inquiries: inquiries.filter(i => i.id !== id) });
   };
 
   return (
@@ -118,6 +140,7 @@ export function SiteProvider({ children }: { children: ReactNode }) {
       settings,
       products,
       services,
+      certificates,
       inquiries,
       updateSettings,
       addProduct,
@@ -126,6 +149,9 @@ export function SiteProvider({ children }: { children: ReactNode }) {
       addService,
       updateService,
       deleteService,
+      addCertificate,
+      updateCertificate,
+      deleteCertificate,
       addInquiry,
       updateInquiryStatus,
       deleteInquiry

@@ -4,6 +4,7 @@ import {
   LayoutDashboard, 
   Package, 
   Briefcase, 
+  Award,
   Settings, 
   MessageSquare,
   Globe,
@@ -19,6 +20,7 @@ const navItems = [
   { path: '/admin', label: 'Dashboard', icon: LayoutDashboard },
   { path: '/admin/products', label: 'Products', icon: Package },
   { path: '/admin/services', label: 'Services', icon: Briefcase },
+  { path: '/admin/certificates', label: 'Certificates', icon: Award },
   { path: '/admin/inquiries', label: 'Inquiries', icon: MessageSquare },
   { path: '/admin/settings', label: 'Settings', icon: Settings },
 ];

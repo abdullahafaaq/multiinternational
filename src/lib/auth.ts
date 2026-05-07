@@ -61,18 +61,32 @@ export function clearToken(): void {
   sessionStorage.removeItem(TOKEN_KEY);
 }
 
-// Password storage (stored in localStorage for persistence)
-const PASSWORD_KEY = 'admin_password';
-const DEFAULT_PASSWORD = 'admin123';
+export async function verifyPassword(inputPassword: string): Promise<boolean> {
+  const response = await fetch('/api/auth/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ password: inputPassword }),
+  });
 
-export function getAdminPassword(): string {
-  return localStorage.getItem(PASSWORD_KEY) || DEFAULT_PASSWORD;
+  if (!response.ok) return false;
+
+  const data = await response.json();
+  return Boolean(data.success);
 }
 
-export function setAdminPassword(newPassword: string): void {
-  localStorage.setItem(PASSWORD_KEY, newPassword);
-}
+export async function updateAdminPassword(currentPassword: string, newPassword: string): Promise<void> {
+  const response = await fetch('/api/admin/password', {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ currentPassword, newPassword }),
+  });
 
-export function verifyPassword(inputPassword: string): boolean {
-  return inputPassword === getAdminPassword();
+  if (!response.ok) {
+    const data = await response.json().catch(() => ({}));
+    throw new Error(data.error || 'Unable to update password.');
+  }
 }

@@ -15,32 +15,32 @@ export default function Header() {
     { path: '/products', label: 'Products' },
     { path: '/services', label: 'Services' },
     { path: '/about', label: 'About' },
-    { path: '/contact', label: 'Contact' },
+    { path: '/contact', label: 'Contact Us' },
   ];
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16 md:h-20">
-          {/* Logo */}
-          <Link to="/" className="group">
+    <header
+      className="fixed left-0 right-0 top-0 z-50 border-b border-slate-200 bg-white text-[#263248] shadow-lg shadow-slate-900/5"
+    >
+      <div className="mx-auto max-w-6xl px-6">
+        <div className="flex h-16 items-center justify-between md:h-[72px]">
+          <Link to="/" className="group">                 
             <img 
               src={logo} 
               alt="Multi International" 
-              className="h-10 md:h-12 w-auto transition-transform group-hover:scale-105"
+              className="h-9 w-auto transition-transform group-hover:scale-105 md:h-11"
             />
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="hidden items-center gap-7 md:flex">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`text-xs font-bold transition-colors ${
                   isActive(link.path)
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                    ? 'text-[#ffbd35]'
+                    : 'text-[#263248]/75 hover:text-[#263248]'
                 }`}
               >
                 {link.label}
@@ -48,18 +48,16 @@ export default function Header() {
             ))}
           </nav>
 
-          {/* CTA Button */}
           <div className="hidden md:block">
             <Link to="/contact">
-              <Button className="gold-gradient text-accent-foreground font-semibold shadow-lg hover:shadow-xl transition-shadow">
-                Get Quote
+              <Button className="h-10 rounded-none bg-[#ffbd35] px-6 text-xs font-extrabold uppercase text-[#263248] shadow-none hover:bg-[#f4a90d]">
+                Get a Quote
               </Button>
             </Link>
           </div>
 
-          {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2 text-foreground"
+            className="p-2 text-[#263248] md:hidden"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Toggle menu"
           >
@@ -69,25 +67,25 @@ export default function Header() {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <nav className="md:hidden py-4 border-t border-border animate-fade-in">
+          <nav className="animate-fade-in border-t border-white/15 bg-white py-4 text-[#263248] md:hidden">
             <div className="flex flex-col gap-2">
               {navLinks.map((link) => (
                 <Link
                   key={link.path}
                   to={link.path}
                   onClick={() => setIsMenuOpen(false)}
-                  className={`px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+                  className={`px-4 py-3 text-sm font-bold transition-colors ${
                     isActive(link.path)
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                      ? 'bg-[#ffbd35] text-[#263248]'
+                      : 'text-[#263248]/70 hover:bg-slate-100 hover:text-[#263248]'
                   }`}
                 >
                   {link.label}
                 </Link>
               ))}
               <Link to="/contact" onClick={() => setIsMenuOpen(false)}>
-                <Button className="w-full mt-2 gold-gradient text-accent-foreground font-semibold">
-                  Get Quote
+                <Button className="mt-2 w-full rounded-none bg-[#ffbd35] font-extrabold uppercase text-[#263248] hover:bg-[#f4a90d]">
+                  Get a Quote
                 </Button>
               </Link>
             </div>

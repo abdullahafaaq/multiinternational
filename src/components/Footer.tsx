@@ -1,116 +1,103 @@
 import { Link } from 'react-router-dom';
-import { Mail, Phone, MapPin, Facebook, Linkedin, Twitter } from 'lucide-react';
+import { Facebook, Linkedin, Mail, MapPin, Phone, Twitter } from 'lucide-react';
 import { useSite } from '@/contexts/SiteContext';
+import { richTextToPlainText, sanitizeRichText } from '@/lib/richText';
 import logo from '@/assets/logo-white.png';
-import { hasRichTextContent, richTextToPlainText, sanitizeRichText } from '@/lib/richText';
 
 export default function Footer() {
   const { settings } = useSite();
-  const emailHref = richTextToPlainText(settings.email);
-  const phoneHref = richTextToPlainText(settings.phone);
-  
+  const email = richTextToPlainText(settings.email);
+  const phone = richTextToPlainText(settings.phone);
+
   return (
-    <footer className="bg-foreground text-primary-foreground">
-      <div className="container mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-          {/* Brand */}
+    <footer className="bg-[#1f2d46] text-white">
+      <div className="mx-auto max-w-6xl px-6 py-12">
+        <div className="grid gap-8 md:grid-cols-3 md:gap-12">
+          {/* Company Info */}
           <div className="space-y-4">
-            <Link to="/">
-            <img 
-              src={logo} 
-              alt="Multi International" 
-              className="h-14 w-auto"
-            />
+            <Link to="/" className="inline-block">
+              <img src={logo} alt="Multi International" className="h-8 w-auto" />
             </Link>
-            <p className="text-primary-foreground/70 text-sm leading-relaxed">
-              <span dangerouslySetInnerHTML={{ __html: sanitizeRichText(settings.tagline) }} />. Facilitating global trade since 2010.
+            <p className="max-w-xs text-xs leading-5 text-white/70">
+              <span dangerouslySetInnerHTML={{ __html: sanitizeRichText(settings.footerDescription || settings.tagline) }} />
             </p>
-            <div className="flex gap-4">
-              <a href="#" className="text-primary-foreground/60 hover:text-accent transition-colors">
-                <Facebook className="w-5 h-5" />
+            <div className="flex items-center gap-3 text-[#ffbd35] pt-2">
+              <a href="#" className="transition hover:text-white">
+                <Facebook className="h-4 w-4" />
               </a>
-              <a href="#" className="text-primary-foreground/60 hover:text-accent transition-colors">
-                <Linkedin className="w-5 h-5" />
+              <a href="#" className="transition hover:text-white">
+                <Twitter className="h-4 w-4" />
               </a>
-              <a href="#" className="text-primary-foreground/60 hover:text-accent transition-colors">
-                <Twitter className="w-5 h-5" />
+              <a href="#" className="transition hover:text-white">
+                <Linkedin className="h-4 w-4" />
               </a>
             </div>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h3 className="font-serif text-lg font-semibold mb-4">Quick Links</h3>
-            <ul className="space-y-3">
-              {['Home', 'Products', 'Services', 'About', 'Contact'].map((link) => (
-                <li key={link}>
-                  <Link 
-                    to={link === 'Home' ? '/' : `/${link.toLowerCase()}`}
-                    className="text-primary-foreground/70 hover:text-accent transition-colors text-sm"
-                  >
-                    {link}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Trade Regions */}
-          <div>
-            <h3 className="font-serif text-lg font-semibold mb-4">Trade Regions</h3>
-            <ul className="space-y-3">
-              {['Asia Pacific', 'Europe', 'North America', 'Middle East', 'Africa', 'South America'].map((region) => (
-                <li key={region}>
-                  <Link 
-                    to="/products"
-                    className="text-primary-foreground/70 hover:text-accent transition-colors text-sm"
-                  >
-                    {region}
-                  </Link>
-                </li>
-              ))}
+            <h3 className="mb-4 text-xs font-extrabold uppercase tracking-wide text-[#ffbd35]">Quick Links</h3>
+            <ul className="space-y-2 text-xs text-white/70">
+              <li>
+                <Link to="/products" className="transition hover:text-[#ffbd35]">
+                  Products
+                </Link>
+              </li>
+              <li>
+                <Link to="/services" className="transition hover:text-[#ffbd35]">
+                  Services
+                </Link>
+              </li>
+              <li>
+                <Link to="/certificates" className="transition hover:text-[#ffbd35]">
+                  Certifications
+                </Link>
+              </li>
+              <li>
+                <Link to="/about" className="transition hover:text-[#ffbd35]">
+                  About Us
+                </Link>
+              </li>
             </ul>
           </div>
 
           {/* Contact Info */}
           <div>
-            <h3 className="font-serif text-lg font-semibold mb-4">Contact Us</h3>
-            <ul className="space-y-4">
-              <li className="flex items-start gap-3">
-                <Mail className="w-5 h-5 text-accent mt-0.5" />
-                <a href={`mailto:${emailHref}`} className="text-primary-foreground/70 hover:text-accent transition-colors text-sm">
-                  <span dangerouslySetInnerHTML={{ __html: sanitizeRichText(settings.email) }} />
-                </a>
-              </li>
-              <li className="flex items-start gap-3">
-                <Phone className="w-5 h-5 text-accent mt-0.5" />
-                <a href={`tel:${phoneHref}`} className="text-primary-foreground/70 hover:text-accent transition-colors text-sm">
-                  <span dangerouslySetInnerHTML={{ __html: sanitizeRichText(settings.phone) }} />
-                </a>
-              </li>
-              <li className="space-y-2">
-                <div className="flex items-start gap-3">
-                  <MapPin className="w-5 h-5 text-accent mt-0.5" />
-                  <p className="text-primary-foreground/70 text-sm" dangerouslySetInnerHTML={{ __html: sanitizeRichText(settings.address) }} />
+            <h3 className="mb-4 text-xs font-extrabold uppercase tracking-wide text-[#ffbd35]">Contact</h3>
+            <div className="space-y-3 text-xs text-white/70">
+              <a href={`mailto:${email}`} className="flex items-start gap-2 transition hover:text-[#ffbd35]">
+                <Mail className="h-4 w-4 mt-0.5 flex-shrink-0 text-[#ffbd35]" />
+                <span dangerouslySetInnerHTML={{ __html: sanitizeRichText(settings.email) }} />
+              </a>
+              <a href={`tel:${phone}`} className="flex items-start gap-2 transition hover:text-[#ffbd35]">
+                <Phone className="h-4 w-4 mt-0.5 flex-shrink-0 text-[#ffbd35]" />
+                <span dangerouslySetInnerHTML={{ __html: sanitizeRichText(settings.phone) }} />
+              </a>
+              <div className="flex items-start gap-2 pt-1">
+                <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0 text-[#ffbd35]" />
+                <div className="space-y-1 text-xs leading-5">
+                  <p dangerouslySetInnerHTML={{ __html: sanitizeRichText(settings.address) }} />
+                  {settings.address2 && (
+                    <p dangerouslySetInnerHTML={{ __html: sanitizeRichText(settings.address2) }} />
+                  )}
                 </div>
-                {hasRichTextContent(settings.address2) && (
-                  <div className="flex items-start gap-3">
-                    <MapPin className="w-5 h-5 text-accent mt-0.5" />
-                    <p className="text-primary-foreground/70 text-sm" dangerouslySetInnerHTML={{ __html: sanitizeRichText(settings.address2) }} />
-                  </div>
-                )}
-              </li>
-            </ul>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="border-t border-primary-foreground/10 mt-12 pt-8 text-center space-y-2">
-          <p className="text-primary-foreground/50 text-sm">
-            © {new Date().getFullYear()} Multi International (Pvt). Ltd. All rights reserved.
+        {/* Divider */}
+        <div className="my-8 border-t border-white/10" />
+
+        {/* Bottom Bar */}
+        <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+          <p className="text-xs text-white/60">
+            © 2026 Multi International. All rights reserved.
           </p>
-          <p className="text-primary-foreground/40 text-xs">
-            www.multiinternational.asia
-          </p>
+          <div className="flex items-center gap-6 text-xs text-white/60">
+            <a href="/products" className="transition hover:text-[#ffbd35]">Privacy Policy</a>
+            <a href="/services" className="transition hover:text-[#ffbd35]">Terms of Service</a>
+          </div>
         </div>
       </div>
     </footer>
