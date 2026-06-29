@@ -34,14 +34,14 @@ export default function AdminCertificates() {
       name: '',
       issuer: '',
       description: '',
-      certificateUrl: '',
       image: 'https://images.unsplash.com/photo-1634129522528-74ff31e2b27c?w=400',
-      featured: false
+      featured: false,
     });
     setEditingCert(null);
     setImageMode('url');
     setCustomImageUrl('');
   };
+
 
   const [previewImage, setPreviewImage] = useState<null | { image: string; name: string }>(null);
 
@@ -52,10 +52,10 @@ export default function AdminCertificates() {
       name: cert.name,
       issuer: cert.issuer,
       description: cert.description,
-      certificateUrl: cert.certificateUrl,
       image: cert.image,
       featured: cert.featured
     });
+
     if (isCustom) {
       setImageMode('url');
       setCustomImageUrl(cert.image);
@@ -246,20 +246,8 @@ export default function AdminCertificates() {
               </div>
 
               {/* Featured */}
-              <div className="flex items-center justify-between p-4 rounded-lg border border-border">
-                <div className="space-y-0.5">
-                  <Label className="text-sm font-medium">Featured</Label>
-                  <p className="text-xs text-muted-foreground">
-                    Display prominently on the certificates page
-                  </p>
-                </div>
-                <Switch
-                  checked={formData.featured}
-                  onCheckedChange={(checked) =>
-                    setFormData(prev => ({ ...prev, featured: checked }))
-                  }
-                />
-              </div>
+                  {/* Featured toggle removed (no featured certificates UI) */}
+
 
               {/* Actions */}
               <div className="flex gap-2 justify-end pt-4">

@@ -293,23 +293,44 @@ export default function Index() {
               <p className="mb-3 text-sm font-bold text-[#42516d]">We Build trust</p>
               <h2 className="text-4xl font-extrabold tracking-[-0.04em]">Certifications</h2>
             </div>
-            <Link to="/certificates" className="bg-[#ffbd35] px-6 py-3 text-xs font-extrabold uppercase text-[#263248]">
+            <Link
+              to="/certificates"
+              className="bg-[#ffbd35] px-6 py-3 text-xs font-extrabold uppercase text-[#263248]"
+            >
               View All
             </Link>
           </div>
-          <div className="grid md:grid-cols-4">
-            {certifications.map((item) => (
-              <article key={item.id} className="relative h-72 overflow-hidden">
-                <img src={item.image} alt={item.name} className="h-full w-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#1f2d46]/85 via-[#1f2d46]/15 to-transparent" />
-                <div className="absolute bottom-7 left-7 text-white">
-                  <h3 className="text-lg font-extrabold leading-tight">{item.name}</h3>
-                  <p className="text-xs text-white/80">{item.issuer}</p>
+
+          {/* Show only 4 certificates on homepage */}
+          <div className="grid md:grid-cols-4 min-h-[70vh] items-stretch">
+            {certifications.slice(0, 4).map((item) => (
+
+              <article
+                key={item.id}
+                className="relative h-full overflow-hidden rounded-xl border border-slate-200 bg-white"
+              >
+                <div className="group relative block h-full w-full text-left">
+                  <div className="absolute inset-0">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-[1.03]"
+                    />
+                  </div>
+
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#1f2d46]/85 via-[#1f2d46]/15 to-transparent" />
+
+                  <div className="absolute bottom-7 left-7 right-7 text-white">
+                    <h3 className="text-lg font-extrabold leading-tight line-clamp-1">{item.name}</h3>
+                    <p className="text-xs text-white/80 line-clamp-1">{item.issuer}</p>
+                  </div>
                 </div>
+
               </article>
             ))}
           </div>
         </section>
+
 
         <section className="bg-gradient-to-br from-slate-50 to-white py-20 md:py-28">
           <div className="mx-auto max-w-6xl px-6">

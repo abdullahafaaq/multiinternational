@@ -95,8 +95,8 @@ export default function Footer() {
             © 2026 Multi International. All rights reserved.
           </p>
           <div className="flex items-center gap-6 text-xs text-white/60">
-            <a href="/products" className="transition hover:text-[#ffbd35]">Privacy Policy</a>
-            <a href="/services" className="transition hover:text-[#ffbd35]">Terms of Service</a>
+            <Link to="/privacy" className="transition hover:text-[#ffbd35]">Privacy Policy</Link>
+            <Link to="/terms" className="transition hover:text-[#ffbd35]">Terms of Service</Link>
           </div>
         </div>
       </div>

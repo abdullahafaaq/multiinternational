@@ -161,7 +161,7 @@ export default function Contact() {
 
               {/* Form */}
               <div className="lg:col-span-2">
-                <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+                <div className="rounded-2xl border border-slate-200 bg-slate-100 p-8 shadow-sm">
                   <h2 className="mb-6 text-2xl font-extrabold text-[#263248]">
                     Send us a Message
                   </h2>
