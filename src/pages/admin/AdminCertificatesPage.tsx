@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Edit2, Trash2, Upload } from 'lucide-react';
+import { Plus, Edit2, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useSite } from '@/contexts/SiteContext';
 import { Certificate } from '@/lib/siteData';
 import { toast } from 'sonner';
+import ImageCropUploadField from '@/components/admin/ImageCropUploadField';
 
 export default function AdminCertificatesPage() {
   const { certificates, addCertificate, updateCertificate, deleteCertificate } = useSite();
@@ -33,19 +34,6 @@ export default function AdminCertificatesPage() {
     });
     setIsDialogOpen(true);
   };
-
-  const handleImageUpload = (file: File | undefined) => {
-    if (!file) return;
-    if (!file.type.startsWith('image/')) { toast.error('Please select an image file.'); return; }
-    if (file.size > 5 * 1024 * 1024) { toast.error('Image must be less than 5MB.'); return; }
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      setFormData(prev => ({ ...prev, image: event.target?.result as string }));
-      toast.success('Image uploaded!');
-    };
-    reader.readAsDataURL(file);
-  };
-
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -90,7 +78,7 @@ export default function AdminCertificatesPage() {
               <DialogTrigger asChild>
                 <Button className="gap-2"><Plus className="w-4 h-4" />Add Certificate</Button>
               </DialogTrigger>
-              <DialogContent className="max-w-2xl">
+              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle className="font-serif text-2xl">
                     {editingCert ? 'Edit Certificate' : 'Add New Certificate'}
@@ -110,14 +98,21 @@ export default function AdminCertificatesPage() {
                     <Textarea value={formData.description} onChange={(e) => setFormData(p => ({ ...p, description: e.target.value }))} placeholder="Certificate description..." rows={3} />
                   </div>
                   <div className="grid md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>Certificate Image *</Label>
-                      <label className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-sm hover:bg-accent w-fit">
-                        <Upload className="h-4 w-4" />Upload Image
-                        <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageUpload(e.target.files?.[0])} />
-                      </label>
-                      {formData.image && <img src={formData.image} alt="" className="h-40 w-full object-contain rounded-md" />}
-                    </div>
+                    <ImageCropUploadField
+                      value={formData.image}
+                      onChange={(value) => setFormData((prev) => ({ ...prev, image: value }))}
+                      label="Certificate Image *"
+                      cropTitle={editingCert ? `Crop ${editingCert.name} Image` : 'Crop Certificate Image'}
+                      cropDescription="Use a portrait crop that keeps certificates readable in the grid and preview modal."
+                      aspect={3 / 4}
+                      outputWidth={1200}
+                      outputHeight={1600}
+                      previewAspectRatio={3 / 4}
+                      previewContainerClassName="w-full max-w-[120px]"
+                      helperText="The image will be resized for the certificate grid and preview."
+                      previewClassName="border border-border rounded-md"
+                      imageFit="contain"
+                    />
                     <div className="flex items-end">
                       <div className="hidden" />
 

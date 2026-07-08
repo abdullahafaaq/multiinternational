@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Edit2, Trash2, Upload, Star } from 'lucide-react';
+import { Plus, Edit2, Trash2, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useSite } from '@/contexts/SiteContext';
 import { Product } from '@/lib/siteData';
 import { toast } from 'sonner';
+import ImageCropUploadField from '@/components/admin/ImageCropUploadField';
 
 export default function AdminProductsPage() {
   const { settings, products, addProduct, updateProduct, deleteProduct, updateSettings } = useSite();
@@ -49,22 +50,6 @@ export default function AdminProductsPage() {
       image: product.image, featured: product.featured
     });
     setIsDialogOpen(true);
-  };
-
-  const handleImageUpload = (file: File | undefined) => {
-    if (!file) return;
-    if (!file.type.startsWith('image/')) {
-      toast.error('Please select an image file.'); return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('Image must be less than 5MB.'); return;
-    }
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      setFormData(prev => ({ ...prev, image: event.target?.result as string }));
-      toast.success('Image uploaded successfully.');
-    };
-    reader.readAsDataURL(file);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -181,14 +166,19 @@ export default function AdminProductsPage() {
                     <Input value={formData.specifications} onChange={(e) => setFormData(p => ({ ...p, specifications: e.target.value }))} placeholder="e.g., Extra Long Grain, 2 Year Aged" />
                   </div>
                   <div className="grid md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>Product Image</Label>
-                      <label className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-sm hover:bg-accent w-fit">
-                        <Upload className="h-4 w-4" />Upload Image
-                        <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageUpload(e.target.files?.[0])} />
-                      </label>
-                      {formData.image && <img src={formData.image} alt="" className="h-32 w-full object-cover rounded-md mt-2" />}
-                    </div>
+                    <ImageCropUploadField
+                      value={formData.image}
+                      onChange={(value) => setFormData((prev) => ({ ...prev, image: value }))}
+                      label="Product Image"
+                      cropTitle={editingProduct ? `Crop ${editingProduct.name} Image` : 'Crop Product Image'}
+                      cropDescription="Use a square crop so product cards render consistently on the Products page and homepage."
+                      aspect={1}
+                      outputWidth={1200}
+                      outputHeight={1200}
+                      previewAspectRatio={1}
+                      helperText="The image will be resized to a square card image."
+                      previewClassName="border border-border rounded-md"
+                    />
                     <div className="flex items-end">
                       <label className="flex items-center gap-2 cursor-pointer">
                         <input type="checkbox" checked={formData.featured} onChange={(e) => setFormData(p => ({ ...p, featured: e.target.checked }))} className="rounded" />

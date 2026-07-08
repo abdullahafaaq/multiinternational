@@ -6,10 +6,11 @@ import { RichTextEditor } from '@/components/ui/rich-text-editor';
 import { useSite } from '@/contexts/SiteContext';
 import { toast } from 'sonner';
 import { useState, useEffect } from 'react';
-import { Lock, Eye, EyeOff, Plus, Trash2, Upload } from 'lucide-react';
+import { Lock, Eye, EyeOff, Plus, Trash2 } from 'lucide-react';
 import { updateAdminPassword } from '@/lib/auth';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { defaultProductCategories, type HeroSlide } from '@/lib/siteData';
+import ImageCropUploadField from '@/components/admin/ImageCropUploadField';
 
 const CTA_ROUTE_OPTIONS = [
   { value: 'none', label: 'No button' },
@@ -43,27 +44,6 @@ export default function AdminSettings() {
         slide.id === slideId ? { ...slide, [key]: value } : slide
       ),
     }));
-  };
-
-  const handleSlideImageUpload = (slideId: string, file: File | undefined) => {
-    if (!file) return;
-
-    if (!file.type.startsWith('image/')) {
-      toast.error('Please select an image file.');
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('Hero image must be less than 5MB.');
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      handleSlideChange(slideId, 'backgroundImage', event.target?.result as string);
-      toast.success('Hero image uploaded successfully.');
-    };
-    reader.readAsDataURL(file);
   };
 
   const handleAddSlide = () => {
@@ -183,27 +163,6 @@ export default function AdminSettings() {
     }));
   };
 
-  const handleTeamMemberImageUpload = (memberId: string, file: File | undefined) => {
-    if (!file) return;
-
-    if (!file.type.startsWith('image/')) {
-      toast.error('Please select an image file.');
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('Founder image must be less than 5MB.');
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      handleTeamMemberChange(memberId, 'image', event.target?.result as string);
-      toast.success('Founder image uploaded successfully.');
-    };
-    reader.readAsDataURL(file);
-  };
-
   const handleAddTeamMember = () => {
     setFormData(prev => ({
       ...prev,
@@ -307,46 +266,27 @@ export default function AdminSettings() {
                   </Button>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor={`background-${slide.id}`}>Background Image URL</Label>
-                  <Input
-                    id={`background-${slide.id}`}
-                    value={slide.backgroundImage}
-                    onChange={(e) => handleSlideChange(slide.id, 'backgroundImage', e.target.value)}
-                    placeholder="https://..."
-                  />
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                    <Label
-                      htmlFor={`background-upload-${slide.id}`}
-                      className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground"
-                    >
-                      <Upload className="h-4 w-4" />
-                      Upload Image
-                    </Label>
+                  <div className="space-y-2">
+                    <Label htmlFor={`background-${slide.id}`}>Background Image URL</Label>
                     <Input
-                      id={`background-upload-${slide.id}`}
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={(e) => handleSlideImageUpload(slide.id, e.target.files?.[0])}
+                      id={`background-${slide.id}`}
+                      value={slide.backgroundImage}
+                      onChange={(e) => handleSlideChange(slide.id, 'backgroundImage', e.target.value)}
+                      placeholder="https://..."
                     />
-                    <p className="text-xs text-muted-foreground">
-                      Use JPG, PNG, or WebP up to 5MB.
-                    </p>
+                    <ImageCropUploadField
+                      value={slide.backgroundImage}
+                      onChange={(value) => handleSlideChange(slide.id, 'backgroundImage', value)}
+                      label="Upload Background Image"
+                      cropTitle={`Crop Slide ${index + 1} Background`}
+                      cropDescription="Use a wide crop that matches the hero banner shown on the public site."
+                      aspect={2.35}
+                      outputWidth={1920}
+                      outputHeight={820}
+                      helperText="The image will be cropped and resized for the homepage hero banner."
+                      previewClassName="h-40 w-full object-cover rounded-md border border-border"
+                    />
                   </div>
-                  {slide.backgroundImage && (
-                    <div className="overflow-hidden rounded-md border border-border">
-                      <img
-                        src={slide.backgroundImage}
-                        alt={`Slide ${index + 1} preview`}
-                        className="h-40 w-full object-cover"
-                        onError={(e) => {
-                          e.currentTarget.src = '/placeholder.svg';
-                        }}
-                      />
-                    </div>
-                  )}
-                </div>
 
                 <RichTextEditor
                   id={`badge-${slide.id}`}
@@ -700,32 +640,19 @@ export default function AdminSettings() {
                           placeholder="https://..."
                         />
                       </div>
-                      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                        <Label
-                          htmlFor={`team-image-upload-${member.id}`}
-                          className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground"
-                        >
-                          <Upload className="h-4 w-4" />
-                          Upload Founder Image
-                        </Label>
-                        <Input
-                          id={`team-image-upload-${member.id}`}
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) => handleTeamMemberImageUpload(member.id, e.target.files?.[0])}
-                        />
-                        <p className="text-xs text-muted-foreground">JPG, PNG, or WebP up to 5MB.</p>
-                      </div>
-                    </div>
-                    <div className="overflow-hidden rounded-md border border-border bg-muted">
-                      <img
-                        src={member.image}
-                        alt={`${member.name} preview`}
-                        className="h-40 w-full object-cover"
-                        onError={(e) => {
-                          e.currentTarget.src = '/placeholder.svg';
-                        }}
+                      <ImageCropUploadField
+                        value={member.image}
+                        onChange={(value) => handleTeamMemberChange(member.id, 'image', value)}
+                        label="Upload Founder Image"
+                        cropTitle={`Crop ${member.name} Photo`}
+                        cropDescription="Use a square crop so founder photos fit the homepage cards cleanly."
+                        aspect={1}
+                        outputWidth={900}
+                        outputHeight={900}
+                        previewAspectRatio={1}
+                        previewContainerClassName="w-full max-w-[220px]"
+                        helperText="The image will be cropped and resized for the founder card layout."
+                        previewClassName="border border-border rounded-md"
                       />
                     </div>
                   </div>

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Edit2, Trash2, Upload } from 'lucide-react';
+import { Plus, Edit2, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useSite } from '@/contexts/SiteContext';
 import { Service } from '@/lib/siteData';
 import { toast } from 'sonner';
+import ImageCropUploadField from '@/components/admin/ImageCropUploadField';
 
 const iconOptions = [
   { value: 'map', label: 'Map' },
@@ -49,25 +50,6 @@ export default function AdminServicesPage() {
     });
     setIsDialogOpen(true);
   };
-
-  const handleImageUpload = (file: File | undefined) => {
-    if (!file) return;
-    if (!file.type.startsWith('image/')) {
-      toast.error('Please select an image file.');
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('Image must be less than 5MB.');
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      setFormData(prev => ({ ...prev, image: event.target?.result as string }));
-      toast.success('Image uploaded successfully.');
-    };
-    reader.readAsDataURL(file);
-  };
-
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -181,30 +163,19 @@ export default function AdminServicesPage() {
                       </label>
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="image-upload">Service Image *</Label>
-                    <div className="flex flex-col gap-3">
-                      <label className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground w-fit">
-                        <Upload className="h-4 w-4" />
-                        Upload Image
-                        <input
-                          id="image-upload"
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) => handleImageUpload(e.target.files?.[0])}
-                        />
-                      </label>
-                      <p className="text-xs text-muted-foreground">
-                        Use JPG, PNG, or WebP up to 5MB.
-                      </p>
-                    </div>
-                    {formData.image && (
-                      <div className="overflow-hidden rounded-md border border-border">
-                        <img src={formData.image} alt="" className="h-40 w-full object-cover" />
-                      </div>
-                    )}
-                  </div>
+                  <ImageCropUploadField
+                    value={formData.image}
+                    onChange={(value) => setFormData((prev) => ({ ...prev, image: value }))}
+                    label="Service Image *"
+                    cropTitle={editingService ? `Crop ${editingService.name} Image` : 'Crop Service Image'}
+                    cropDescription="Use a 4:3 crop so service cards fill their image area cleanly."
+                    aspect={4 / 3}
+                    outputWidth={1200}
+                    outputHeight={900}
+                    previewAspectRatio={4 / 3}
+                    helperText="The image will be resized to match the service card layout."
+                    previewClassName="border border-border rounded-md"
+                  />
                   <Button type="submit" className="w-full">
                     {editingService ? 'Update Service' : 'Add Service'}
                   </Button>

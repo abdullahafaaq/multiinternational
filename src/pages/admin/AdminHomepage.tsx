@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Edit2, Trash2, Upload, ArrowRight, GripVertical } from 'lucide-react';
+import { Plus, Edit2, Trash2, ArrowRight, GripVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useSite } from '@/contexts/SiteContext';
 import { HeroSlide } from '@/lib/siteData';
 import { toast } from 'sonner';
+import ImageCropUploadField from '@/components/admin/ImageCropUploadField';
 
 const CTA_ROUTE_OPTIONS = [
   { value: 'none', label: 'No button' },
@@ -38,24 +39,6 @@ export default function AdminHomepage() {
     }));
   };
 
-
-  const handleSlideImageUpload = (slideId: string, file: File | undefined) => {
-    if (!file) return;
-    if (!file.type.startsWith('image/')) {
-      toast.error('Please select an image file.');
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('Image must be less than 5MB.');
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      handleSlideChange(slideId, 'backgroundImage', event.target?.result as string);
-      toast.success('Image uploaded successfully.');
-    };
-    reader.readAsDataURL(file);
-  };
 
   const handleAddSlide = () => {
     const newSlide: HeroSlide = {
@@ -189,24 +172,19 @@ export default function AdminHomepage() {
                       rows={2}
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label>Background Image</Label>
-                    <div className="flex flex-col gap-3">
-                      <label className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground w-fit">
-                        <Upload className="h-4 w-4" />
-                        Upload Image
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) => handleSlideImageUpload(slide.id, e.target.files?.[0])}
-                        />
-                      </label>
-                      {slide.backgroundImage && (
-                        <img src={slide.backgroundImage} alt="" className="h-40 w-full object-cover rounded-md" />
-                      )}
-                    </div>
-                  </div>
+                  <ImageCropUploadField
+                    value={slide.backgroundImage}
+                    onChange={(value) => handleSlideChange(slide.id, 'backgroundImage', value)}
+                    label="Background Image"
+                    cropTitle={`Crop Slide ${index + 1} Background`}
+                    cropDescription="Use a wide crop that matches the homepage hero."
+                    aspect={2.35}
+                    outputWidth={1920}
+                    outputHeight={820}
+                    previewAspectRatio={2.35}
+                    helperText="The image will be cropped and resized for the homepage hero section."
+                    previewClassName="border border-border rounded-md"
+                  />
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label>Primary Button Label</Label>

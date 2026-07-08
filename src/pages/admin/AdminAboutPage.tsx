@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Edit2, Trash2, Upload } from 'lucide-react';
+import { Plus, Edit2, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -11,6 +11,7 @@ import { useSite } from '@/contexts/SiteContext';
 import { TeamMember } from '@/lib/siteData';
 import { toast } from 'sonner';
 import { RichTextEditor } from '@/components/ui/rich-text-editor';
+import ImageCropUploadField from '@/components/admin/ImageCropUploadField';
 
 export default function AdminAboutPage() {
   const { settings, updateSettings } = useSite();
@@ -30,18 +31,6 @@ export default function AdminAboutPage() {
     setEditingMember(member);
     setMemberForm({ name: member.name, title: member.title, image: member.image });
     setIsMemberDialogOpen(true);
-  };
-
-  const handleMemberImageUpload = (file: File | undefined) => {
-    if (!file) return;
-    if (!file.type.startsWith('image/')) { toast.error('Please select an image file.'); return; }
-    if (file.size > 5 * 1024 * 1024) { toast.error('Image must be less than 5MB.'); return; }
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      setMemberForm(prev => ({ ...prev, image: event.target?.result as string }));
-      toast.success('Image uploaded!');
-    };
-    reader.readAsDataURL(file);
   };
 
   const handleMemberSubmit = () => {
@@ -120,14 +109,20 @@ export default function AdminAboutPage() {
                     <Label>Title/Position *</Label>
                     <Input value={memberForm.title} onChange={(e) => setMemberForm(p => ({ ...p, title: e.target.value }))} placeholder="CEO" />
                   </div>
-                  <div className="space-y-2">
-                    <Label>Photo</Label>
-                    <label className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-sm hover:bg-accent w-fit">
-                      <Upload className="h-4 w-4" />Upload Photo
-                      <input type="file" accept="image/*" className="hidden" onChange={(e) => handleMemberImageUpload(e.target.files?.[0])} />
-                    </label>
-                    {memberForm.image && <img src={memberForm.image} alt="" className="h-32 w-full object-cover rounded-md" />}
-                  </div>
+                  <ImageCropUploadField
+                    value={memberForm.image}
+                    onChange={(value) => setMemberForm((prev) => ({ ...prev, image: value }))}
+                    label="Photo"
+                    cropTitle={editingMember ? `Crop ${editingMember.name}'s Photo` : 'Crop Team Member Photo'}
+                    cropDescription="Use a square crop so founder photos fit the homepage and About page cards cleanly."
+                    aspect={1}
+                    outputWidth={900}
+                    outputHeight={900}
+                    previewAspectRatio={1}
+                    previewContainerClassName="w-full max-w-[220px]"
+                    helperText="The image will be resized to a square card-friendly format."
+                    previewClassName="border border-border rounded-md"
+                  />
                   <Button type="button" onClick={handleMemberSubmit} className="w-full">
                     {editingMember ? 'Update' : 'Add Member'}
                   </Button>
