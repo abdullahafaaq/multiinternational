@@ -28,9 +28,17 @@ npm run build
 npm start
 ```
 
-The production server hosts the built site and saves shared products, website settings, services, inquiries, and admin password settings in `data/multiinternational.sqlite`.
+The production server hosts the built site and saves shared products, website settings, services, inquiries, and admin password settings in SQLite.
 
-Before database writes, the server keeps timestamped recovery copies in `data/backups/` and retains the latest 20 backups.
+For VPS hosting, keep runtime data outside the git checkout by setting `PERSISTENT_DATA_DIR` to a persistent folder, for example:
+
+```sh
+PERSISTENT_DATA_DIR=/var/lib/multiinternational npm start
+```
+
+This keeps database content and image uploads separate from code deployments, so a `git reset --hard` only affects source files.
+
+Before database writes, the server keeps timestamped recovery copies in the persistent data directory and retains the latest 20 backups.
 
 If `data/site-data.json` exists from an older version, the server imports it into SQLite the first time the database is created.
 

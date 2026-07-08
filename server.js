@@ -8,7 +8,9 @@ import initSqlJs from 'sql.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 3001);
-const DATA_DIR = path.join(__dirname, 'data');
+const DATA_DIR = process.env.PERSISTENT_DATA_DIR
+  ? path.resolve(process.env.PERSISTENT_DATA_DIR)
+  : path.join(__dirname, 'data');
 const BACKUP_DIR = path.join(DATA_DIR, 'backups');
 const DB_FILE = path.join(DATA_DIR, 'multiinternational.sqlite');
 const LEGACY_JSON_FILE = path.join(DATA_DIR, 'site-data.json');

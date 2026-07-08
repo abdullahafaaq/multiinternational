@@ -10,10 +10,7 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
-data/*.json
-data/*.sqlite
-data/*.sqlite.tmp
-data/backups/
+data/
 *.local
 
 # Editor directories and files
