@@ -25,6 +25,7 @@ import AdminCertificatesPage from "./pages/admin/AdminCertificatesPage";
 import AdminContactPage from "./pages/admin/AdminContactPage";
 import AdminInquiries from "./pages/admin/AdminInquiries";
 import AdminSettings from "./pages/admin/AdminSettings";
+import AdminBackupRestorePage from "./pages/admin/AdminBackupRestorePage";
 import NotFound from "./pages/NotFound";
 import WhatsAppFloatingButton from "./components/WhatsAppFloatingButton";
 
@@ -81,6 +82,7 @@ const App = () => (
                 <Route path="contact" element={<AdminContactPage />} />
                 <Route path="inquiries" element={<AdminInquiries />} />
                 <Route path="settings" element={<AdminSettings />} />
+                <Route path="backup" element={<AdminBackupRestorePage />} />
               </Route>
               
               {/* Catch-all */}

@@ -8,13 +8,12 @@ import {
   Award,
   Settings, 
   MessageSquare,
-  Globe,
   LogOut,
   Menu,
   X,
   User,
-  FileText,
-  Mail
+  Mail,
+  HardDrive
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
@@ -31,6 +30,7 @@ const navItems = [
   { path: '/admin/contact', label: 'Contact', icon: Mail },
   { path: '/admin/inquiries', label: 'Inquiries', icon: MessageSquare },
   { path: '/admin/settings', label: 'Settings', icon: Settings },
+  { path: '/admin/backup', label: 'Backup & Restore', icon: HardDrive },
 ];
 
 export default function AdminLayout() {
@@ -111,7 +111,6 @@ export default function AdminLayout() {
             );
           })}
         </nav>
-
 
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border">
           <Button 
