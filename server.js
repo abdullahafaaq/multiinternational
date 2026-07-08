@@ -216,6 +216,10 @@ let db;
 let SQL;
 let writeQueue = Promise.resolve();
 
+function createBackupFilename(date = new Date()) {
+  return `multiinternational-backup-${date.toISOString().replace(/[:.]/g, '-')}.sqlite`;
+}
+
 async function pathExists(filePath) {
   try {
     await stat(filePath);
@@ -358,13 +362,21 @@ async function loadInitialData() {
 
 function persistDatabase() {
   writeQueue = writeQueue.then(async () => {
-    const tempFile = `${DB_FILE}.tmp`;
-    await backupDatabase();
-    await writeFile(tempFile, Buffer.from(db.export()));
-    await rename(tempFile, DB_FILE);
+    await saveDatabaseSnapshot(Buffer.from(db.export()));
   });
 
   return writeQueue;
+}
+
+async function saveDatabaseSnapshot(buffer, { createBackup = true } = {}) {
+  if (createBackup) {
+    await backupDatabase();
+  }
+
+  await mkdir(DATA_DIR, { recursive: true });
+  const tempFile = `${DB_FILE}.tmp`;
+  await writeFile(tempFile, buffer);
+  await rename(tempFile, DB_FILE);
 }
 
 async function backupDatabase() {
@@ -393,6 +405,76 @@ function parseJson(value, fallback) {
   } catch {
     return fallback;
   }
+}
+
+function sendBinary(response, status, buffer, headers = {}) {
+  response.writeHead(status, {
+    'Cache-Control': 'no-store',
+    'Content-Type': 'application/octet-stream',
+    'Content-Length': buffer.length,
+    ...headers,
+  });
+  response.end(buffer);
+}
+
+async function readRequestBuffer(request) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    let totalLength = 0;
+
+    request.on('data', (chunk) => {
+      const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+      totalLength += buffer.length;
+      if (totalLength > 50_000_000) {
+        reject(new Error('Request body is too large.'));
+        request.destroy();
+        return;
+      }
+      chunks.push(buffer);
+    });
+
+    request.on('end', () => resolve(Buffer.concat(chunks)));
+    request.on('error', reject);
+  });
+}
+
+function validateDatabaseBuffer(buffer) {
+  if (!buffer || buffer.length < 16 || buffer.subarray(0, 16).toString('utf8') !== 'SQLite format 3\0') {
+    throw new Error('Uploaded file is not a valid SQLite backup.');
+  }
+
+  return new SQL.Database(buffer);
+}
+
+async function downloadCurrentDatabase(response) {
+  await writeQueue;
+
+  let buffer;
+
+  if (await pathExists(DB_FILE)) {
+    buffer = await readFile(DB_FILE);
+  } else {
+    buffer = Buffer.from(db.export());
+  }
+
+  sendBinary(response, 200, Buffer.isBuffer(buffer) ? buffer : Buffer.from(buffer), {
+    'Content-Type': 'application/x-sqlite3',
+    'Content-Disposition': `attachment; filename="${createBackupFilename()}"`,
+  });
+}
+
+async function restoreDatabaseFromBuffer(buffer) {
+  const restoredDb = validateDatabaseBuffer(buffer);
+
+  try {
+    db.close?.();
+  } catch {
+    // Ignore close errors and replace the in-memory database anyway.
+  }
+
+  db = restoredDb;
+  db.run('PRAGMA foreign_keys = ON;');
+  await saveDatabaseSnapshot(Buffer.from(db.export()), { createBackup: false });
 }
 
 function selectProducts() {
@@ -654,6 +736,38 @@ async function handleSiteDataApi(request, response) {
   response.end();
 }
 
+async function handleDatabaseBackupApi(request, response) {
+  if (request.method === 'GET') {
+    await downloadCurrentDatabase(response);
+    return;
+  }
+
+  if (request.method === 'POST') {
+    await writeQueue;
+    const buffer = await readRequestBuffer(request);
+
+    if (!buffer.length) {
+      sendJson(response, 400, { error: 'Backup file is empty.' });
+      return;
+    }
+
+    try {
+      await backupDatabase();
+      await restoreDatabaseFromBuffer(buffer);
+      sendJson(response, 200, { success: true });
+    } catch (error) {
+      console.error('Failed to restore database backup:', error);
+      sendJson(response, 400, {
+        error: error instanceof Error ? error.message : 'Unable to restore backup.',
+      });
+    }
+    return;
+  }
+
+  response.writeHead(405, { Allow: 'GET, POST' });
+  response.end();
+}
+
 async function handleAuthApi(request, response) {
   if (request.url === '/api/auth/login' && request.method === 'POST') {
     const { password } = await readJsonBody(request);
@@ -684,12 +798,19 @@ async function handleAuthApi(request, response) {
 }
 
 async function handleApi(request, response) {
-  if (request.url === '/api/site-data') {
+  const requestPath = new URL(request.url || '/', 'http://localhost').pathname;
+
+  if (requestPath === '/api/site-data') {
     await handleSiteDataApi(request, response);
     return;
   }
 
-  if (request.url?.startsWith('/api/auth/') || request.url === '/api/admin/password') {
+  if (requestPath === '/api/admin/database-backup' || requestPath === '/api/admin/backup') {
+    await handleDatabaseBackupApi(request, response);
+    return;
+  }
+
+  if (requestPath.startsWith('/api/auth/') || requestPath === '/api/admin/password') {
     await handleAuthApi(request, response);
     return;
   }

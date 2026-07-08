@@ -5,8 +5,8 @@ import { Label } from '@/components/ui/label';
 import { RichTextEditor } from '@/components/ui/rich-text-editor';
 import { useSite } from '@/contexts/SiteContext';
 import { toast } from 'sonner';
-import { useState, useEffect } from 'react';
-import { Lock, Eye, EyeOff, Plus, Trash2 } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { AlertTriangle, Download, Eye, EyeOff, Lock, Plus, Trash2, Upload } from 'lucide-react';
 import { updateAdminPassword } from '@/lib/auth';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { defaultProductCategories, type HeroSlide } from '@/lib/siteData';
@@ -25,6 +25,9 @@ export default function AdminSettings() {
   const [formData, setFormData] = useState(settings);
   const [newCategory, setNewCategory] = useState('');
   const [newFooterRegion, setNewFooterRegion] = useState('');
+  const backupFileInputRef = useRef<HTMLInputElement | null>(null);
+  const [isDownloadingBackup, setIsDownloadingBackup] = useState(false);
+  const [isRestoringBackup, setIsRestoringBackup] = useState(false);
   
   // Password change state
   const [currentPassword, setCurrentPassword] = useState('');
@@ -81,6 +84,78 @@ export default function AdminSettings() {
     e.preventDefault();
     updateSettings(formData);
     toast.success('Settings saved successfully!');
+  };
+
+  const handleDownloadBackup = async () => {
+    setIsDownloadingBackup(true);
+
+    try {
+      const response = await fetch('/api/admin/database-backup');
+
+      if (!response.ok) {
+        throw new Error(`Failed to download backup: ${response.status}`);
+      }
+
+      const blob = await response.blob();
+      const contentDisposition = response.headers.get('Content-Disposition') || '';
+      const filenameMatch = contentDisposition.match(/filename="?([^";]+)"?/i);
+      const filename = filenameMatch?.[1] || `multiinternational-backup-${new Date().toISOString().slice(0, 10)}.sqlite`;
+      const downloadUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+
+      link.href = downloadUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(downloadUrl);
+
+      toast.success('Backup downloaded successfully.');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Unable to download backup.');
+    } finally {
+      setIsDownloadingBackup(false);
+    }
+  };
+
+  const handleRestoreBackupClick = () => {
+    backupFileInputRef.current?.click();
+  };
+
+  const handleRestoreBackupFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+
+    if (!file) return;
+
+    if (!window.confirm('Restoring a backup will replace the current site data. Continue?')) {
+      return;
+    }
+
+    setIsRestoringBackup(true);
+
+    try {
+      const response = await fetch('/api/admin/database-backup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-sqlite3',
+          'X-Backup-Filename': file.name,
+        },
+        body: await file.arrayBuffer(),
+      });
+
+      if (!response.ok) {
+        const errorPayload = await response.json().catch(() => null);
+        throw new Error(errorPayload?.error || `Failed to restore backup: ${response.status}`);
+      }
+
+      toast.success('Backup restored. Reloading data...');
+      window.setTimeout(() => window.location.reload(), 900);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Unable to restore backup.');
+    } finally {
+      setIsRestoringBackup(false);
+    }
   };
 
   const handlePasswordChange = async (e: React.FormEvent) => {
@@ -749,6 +824,46 @@ export default function AdminSettings() {
           Save Changes
         </Button>
       </form>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="font-serif flex items-center gap-2">
+            <Download className="w-5 h-5" />
+            Backup & Restore
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-100">
+            <div className="mb-2 flex items-center gap-2 font-medium">
+              <AlertTriangle className="w-4 h-4" />
+              Keep an offsite copy
+            </div>
+            The server already keeps automatic backups before each save. Use the button below to download a full SQLite backup and store a copy outside the VPS so a deploy or reset cannot remove it.
+          </div>
+
+          <div className="flex flex-col gap-3 md:flex-row">
+            <Button type="button" variant="secondary" onClick={handleDownloadBackup} disabled={isDownloadingBackup}>
+              <Download className="w-4 h-4 mr-2" />
+              {isDownloadingBackup ? 'Downloading...' : 'Download Backup'}
+            </Button>
+            <Button type="button" variant="outline" onClick={handleRestoreBackupClick} disabled={isRestoringBackup}>
+              <Upload className="w-4 h-4 mr-2" />
+              {isRestoringBackup ? 'Restoring...' : 'Restore Backup'}
+            </Button>
+            <Input
+              ref={backupFileInputRef}
+              type="file"
+              accept=".sqlite,.db,application/x-sqlite3"
+              onChange={handleRestoreBackupFileChange}
+              className="hidden"
+            />
+          </div>
+
+          <p className="text-sm text-muted-foreground">
+            Downloaded backups include the whole site database. When you restore one, the current content is replaced and the page reloads so the admin UI reflects the restored state.
+          </p>
+        </CardContent>
+      </Card>
 
       {/* Password Change Section */}
       <form onSubmit={handlePasswordChange} className="space-y-6">
